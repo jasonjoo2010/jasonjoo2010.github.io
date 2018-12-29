@@ -1,6 +1,11 @@
 Why We Need Monitoring Druid
 ===
 
+- date: 2018-12-29
+- tags: druid, java
+
+------------
+
 # Issue occurred
 Recently there is a very strange problem happening every night on about 20:00:05. The `SELECTED` provider (DUBBO) will reach the capacity of DUBBO thread pool which is limit to **2000** threads and in **fixed** pool model. Most of them blocked in the position of fetching connections through druid:
 

@@ -16,7 +16,7 @@ config:
     output: .
     static: static
     static_prefix: /static/
-    permalink: "{{date.year}}/{{filename}}.html"
+    permalink: "{{date.year}}/{{date.month}}/{{date.day}}/{{filename}}.html"
     relative_url: false
     perpage: 30
     feedcount: 20
@@ -49,7 +49,7 @@ writer:
         - liquidluck.writers.core.YearWriter
         - liquidluck.writers.core.CategoryWriter
         #- liquidluck.writers.core.CategoryFeedWriter
-        #- liquidluck.writers.core.TagWriter
+        - liquidluck.writers.core.TagWriter
         #- liquidluck.writers.core.TagCloudWriter
     vars:
         # uncomment if you want to reset archive page
