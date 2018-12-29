@@ -13,8 +13,8 @@ site:
 #: 1. where the resources  2. how should the site be generated
 config:
     source: content
-    output: deploy
-    static: deploy/static
+    output: .
+    static: static
     static_prefix: /static/
     permalink: "{{date.year}}/{{filename}}.html"
     relative_url: false
