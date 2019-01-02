@@ -21,7 +21,7 @@ Recently there is a very strange problem happening every night on about 20:00:05
         at com.alibaba.druid.filter.FilterChainImpl.dataSource_connect(FilterChainImpl.java:4540)
 ```
 
-# Analysising
+# Analysis 1
 First we can find that it seems like many threads stuck inside pollLast(). Precisely on `notEmpty.awaitNanos()`. Maybe it is caused by some forms of dead lock or racing problem. Which is even more strange why we use `SELECTED` before there is only `ONE` node suffered this issue while we have 6 nodes all together.
 
 So There maybe some rarely executed invocation or scheduled task causing this problem.
@@ -86,7 +86,7 @@ We can be sure of all idle connections's status using it.
 
 ![poolCount's curve after adding keepAlive](PoolingCountAfter.png)
 
-# Conclusion
+# Conclusion 1
 Connections in idle pool(Which is calculated as `poolCount`) is not reliable when you turn off `testOnBorrow`. And if you have some big fluctuations of load, for example, you will also take time to reconnect with turning on `testOnBorrow`. That  will lead to poor performance when fluctuations occur.  
 
 So we can turn on the `keepAlive` option to really keep alive the connections in idle (`minIdle`) to get prepared to the fluctuations.
@@ -109,4 +109,44 @@ So we can turn on the `keepAlive` option to really keep alive the connections in
 By the way the problem of `NotEmptyWaitCount` is solved at the same time.
 ![NotEmptyWaitCountAfter](NotEmptyWaitCountAfter.png)
 
+# Result
+After making some changes of configuration we continue to check the monitor data.
+
+![A peak after optimzing configuration](Peak.png)
+
+The peak shows that it indeed need about 100 connections at that time and cost much time to increase from 40 to 100 connections. Thus because, in `CreateThread`, one by one.
+
+# Analysis 2
+
+So we face two different solutions:  
+
+1. Increase the connection pool from 40 to 100 at least.
+2. Find a way to increase the count of connections in pool to 100 before the peaks coming.
+
+The first way is simple but it's a waste of connection resources in non-peak time. So we'd like following the other way.  
+
+At the end, we create a parametric task to do that which can be change parameter online. Parameter is like `1000=100,1157=100,1958=150,2019=150,2130=100,2357=100`.  The key is `HHmm` while the value is filling count of connection pool. So we can `warm up` the pool before the peak coming.
+
+![Warm up](WarmUpPoolingCount.png)
+
+While the wait count turns to be:  
+
+![Wait Count](WaitCount.png)
+
+We can see there was nearly no wait count after our warming up action before peaks.
+
+# Conclusion 2
+For summary the route of solving this problem is:
+
+1. Find problem in monitor data of dubbo.
+2. Go deeper in dubbo's stack dump and `jstack` using `crontab`.
+3. Add monitor for druid pool and find out the `NotEmptyWaitCount` is increasing all the time.
+4. Find the `minIdle` doesn't match the physical connection count (from `netstat`) as expected. And `PoolingCount` also can't keep the `minIdle` value. And more it mainly decreased at 10 minutes point after booted which was `minEvictableIdleTimeMillis`. So add `keepAlive` to ensure the connection's status. `PoolingCount` can be keep to `minIdle` after that.
+5. Find `PoolingCount` increasing to 100 when following peak came. We chose using a `warm up` job.
+6. Problem is solved finally.  
+
+## Important
+
+1. Monitoring is important. Where your eyes go monitor should follow.
+2. Warming is important. Especially if you don't want much waste of resources.
 

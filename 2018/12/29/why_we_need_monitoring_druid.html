@@ -53,7 +53,7 @@
         <span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">alibaba</span><span class="o">.</span><span class="na">druid</span><span class="o">.</span><span class="na">filter</span><span class="o">.</span><span class="na">FilterChainImpl</span><span class="o">.</span><span class="na">dataSource_connect</span><span class="o">(</span><span class="n">FilterChainImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">4540</span><span class="o">)</span>
 </pre></div>
 
-<h1 id="toc_1">Analysising</h1>
+<h1 id="toc_1">Analysis 1</h1>
 <p>First we can find that it seems like many threads stuck inside pollLast(). Precisely on <code>notEmpty.awaitNanos()</code>. Maybe it is caused by some forms of dead lock or racing problem. Which is even more strange why we use <code>SELECTED</code> before there is only <code>ONE</code> node suffered this issue while we have 6 nodes all together.</p>
 <p>So There maybe some rarely executed invocation or scheduled task causing this problem.</p>
 <p>Currently we use the version <code>1.0.10</code> while the newest release is <code>1.1.12</code>. So we can try to upgrade it.</p>
@@ -105,7 +105,7 @@
 <p>We can be sure of all idle connections&#39;s status using it.</p>
 <p><img src="PoolingCountAfter.png" alt="poolCount&#39;s curve after adding keepAlive"/></p>
 
-<h1 id="toc_11">Conclusion</h1>
+<h1 id="toc_11">Conclusion 1</h1>
 <p>Connections in idle pool(Which is calculated as <code>poolCount</code>) is not reliable when you turn off <code>testOnBorrow</code>. And if you have some big fluctuations of load, for example, you will also take time to reconnect with turning on <code>testOnBorrow</code>. That  will lead to poor performance when fluctuations occur.  </p>
 <p>So we can turn on the <code>keepAlive</code> option to really keep alive the connections in idle (<code>minIdle</code>) to get prepared to the fluctuations.</p>
 <div class="highlight"><pre><span></span><span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;initialSize&quot;</span> <span class="na">value=</span><span class="s">&quot;40&quot;</span> <span class="nt">/&gt;</span>
@@ -122,6 +122,44 @@
 </pre></div>
 <p>By the way the problem of <code>NotEmptyWaitCount</code> is solved at the same time.
 <img src="NotEmptyWaitCountAfter.png" alt="NotEmptyWaitCountAfter"/></p>
+
+<h1 id="toc_12">Result</h1>
+<p>After making some changes of configuration we continue to check the monitor data.</p>
+<p><img src="Peak.png" alt="A peak after optimzing configuration"/></p>
+<p>The peak shows that it indeed need about 100 connections at that time and cost much time to increase from 40 to 100 connections. Thus because, in <code>CreateThread</code>, one by one.</p>
+
+<h1 id="toc_13">Analysis 2</h1>
+<p>So we face two different solutions:  </p>
+
+<ol>
+<li>Increase the connection pool from 40 to 100 at least.</li>
+<li>Find a way to increase the count of connections in pool to 100 before the peaks coming.</li>
+</ol>
+<p>The first way is simple but it&#39;s a waste of connection resources in non-peak time. So we&#39;d like following the other way.  </p>
+<p>At the end, we create a parametric task to do that which can be change parameter online. Parameter is like <code>1000=100,1157=100,1958=150,2019=150,2130=100,2357=100</code>.  The key is <code>HHmm</code> while the value is filling count of connection pool. So we can <code>warm up</code> the pool before the peak coming.</p>
+<p><img src="WarmUpPoolingCount.png" alt="Warm up"/></p>
+<p>While the wait count turns to be:  </p>
+<p><img src="WaitCount.png" alt="Wait Count"/></p>
+<p>We can see there was nearly no wait count after our warming up action before peaks.</p>
+
+<h1 id="toc_14">Conclusion 2</h1>
+<p>For summary the route of solving this problem is:</p>
+
+<ol>
+<li>Find problem in monitor data of dubbo.</li>
+<li>Go deeper in dubbo&#39;s stack dump and <code>jstack</code> using <code>crontab</code>.</li>
+<li>Add monitor for druid pool and find out the <code>NotEmptyWaitCount</code> is increasing all the time.</li>
+<li>Find the <code>minIdle</code> doesn&#39;t match the physical connection count (from <code>netstat</code>) as expected. And <code>PoolingCount</code> also can&#39;t keep the <code>minIdle</code> value. And more it mainly decreased at 10 minutes point after booted which was <code>minEvictableIdleTimeMillis</code>. So add <code>keepAlive</code> to ensure the connection&#39;s status. <code>PoolingCount</code> can be keep to <code>minIdle</code> after that.</li>
+<li>Find <code>PoolingCount</code> increasing to 100 when following peak came. We chose using a <code>warm up</code> job.</li>
+<li>Problem is solved finally.<br/></li>
+</ol>
+
+<h2 id="toc_15">Important</h2>
+
+<ol>
+<li>Monitoring is important. Where your eyes go monitor should follow.</li>
+<li>Warming is important. Especially if you don&#39;t want much waste of resources.</li>
+</ol>
 
     </div>
 
