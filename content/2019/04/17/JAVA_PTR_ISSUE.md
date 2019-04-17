@@ -212,6 +212,6 @@ Things go right after changing the default JDK to `1.7.0_71`.(Only on CentOS 5.x
 What's the real difference in JNI implementation between 7/8 which causes this issue on specific condition?
 
 # Reference
-[1] Arthas JVM Debugger https://github.com/alibaba/arthas
+[1] Arthas JVM Debugger https://github.com/alibaba/arthas  
 [2] Reverse DNS lookup https://en.wikipedia.org/wiki/Reverse_DNS_lookup
 

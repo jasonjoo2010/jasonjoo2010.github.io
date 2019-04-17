@@ -3,14 +3,14 @@
     <title>Jason Joo</title>
     <link href="http://jasonjoo2010.github.io/feed.xml" rel="self" />
     <link href="http://jasonjoo2010.github.io/" />
-    <updated>2019-04-17T19:06:15+08:00</updated>
+    <updated>2019-04-17T19:09:51+08:00</updated>
     <id>http://jasonjoo2010.github.io/</id>
     <entry>
         <title type="html"><![CDATA[Java&#39;s Hostname Resolving Problem]]></title>
         <author><name>Jason</name></author>
         <link href="http://jasonjoo2010.github.io/2019/04/17/java_ptr_issue.html"/>
         <published>2019-04-17T00:00:00+08:00</published>
-        <updated>2019-04-17T19:06:15+08:00</updated>
+        <updated>2019-04-17T19:09:51+08:00</updated>
         <id>http://jasonjoo2010.github.io/2019/04/17/java_ptr_issue.html</id>
         <category scheme="http://jasonjoo2010.github.io/tag/inetaddress/" term="InetAddress" label="InetAddress" />
         <category scheme="http://jasonjoo2010.github.io/tag/java/" term="java" label="java" />
@@ -200,7 +200,7 @@ sys 0m0.000s
 <p>What&#39;s the real difference in JNI implementation between 7/8 which causes this issue on specific condition?</p>
 
 <h1 id="toc_10">Reference</h1>
-<p>[1] Arthas JVM Debugger <a href="https://github.com/alibaba/arthas">github.com/alibaba/arthas</a>
+<p>[1] Arthas JVM Debugger <a href="https://github.com/alibaba/arthas">github.com/alibaba/arthas</a><br/>
 [2] Reverse DNS lookup <a href="https://en.wikipedia.org/wiki/Reverse_DNS_lookup">en.wikipedia.org/wiki/Reverse_DNS_lookup</a></p>
 ]]>
         </content>
