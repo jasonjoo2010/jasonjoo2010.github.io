@@ -3,14 +3,14 @@
     <title>Jason Joo</title>
     <link href="http://jasonjoo2010.github.io/feed.xml" rel="self" />
     <link href="http://jasonjoo2010.github.io/" />
-    <updated>2019-04-19T15:41:10+08:00</updated>
+    <updated>2019-04-19T18:17:42+08:00</updated>
     <id>http://jasonjoo2010.github.io/</id>
     <entry>
         <title type="html"><![CDATA[&quot;No subject alternative names present&quot; on New JDK]]></title>
         <author><name>Jason</name></author>
         <link href="http://jasonjoo2010.github.io/2019/04/19/no_subject_alternative_names_present.html"/>
         <published>2019-04-19T00:00:00+08:00</published>
-        <updated>2019-04-19T15:41:10+08:00</updated>
+        <updated>2019-04-19T18:17:42+08:00</updated>
         <id>http://jasonjoo2010.github.io/2019/04/19/no_subject_alternative_names_present.html</id>
         <category scheme="http://jasonjoo2010.github.io/tag/ssl/" term="ssl" label="ssl" />
         <category scheme="http://jasonjoo2010.github.io/tag/ldaps/" term="ldaps" label="ldaps" />
@@ -288,6 +288,9 @@
 <li>For manually created ssl connections you can enable/disable by setting the parameter <code>endpointIdentificationAlgorithm</code> of SSLSocket. Its value can only be <code>SSL</code>/<code>LDAPS</code>. <code>SSL</code> is for all the non-ldap connections.</li>
 </ol>
 <p>It&#39;s recommended that regenerated the issued certificate using the right properties.</p>
+
+<h1 id="toc_4">Reference</h1>
+<p>[1] Java Docker API Client <a href="https://github.com/docker-java/docker-java">github.com/docker-java/docker-java</a></p>
 ]]>
         </content>
     </entry><entry>
