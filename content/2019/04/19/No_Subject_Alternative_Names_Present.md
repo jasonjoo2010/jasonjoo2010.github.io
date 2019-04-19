@@ -88,6 +88,7 @@ Fortunately we can debug it in source code level (package `sun.security`) becaus
 Oh it enters into the `matchIP` too like we were in the first case. But the stack may be different. After more debugging:  
 
 `sun.security.ssl.SSLContextImpl`
+
 ```java
     @Override
     public void checkServerTrusted(X509Certificate[] chain, String authType,
@@ -155,6 +156,7 @@ But we don't set it to any value when creating the ssl socket and printing its v
 ```
 
 Console output:
+
 ```
 null
 ```
@@ -162,6 +164,7 @@ null
 So who sets it? After deeper tracing I arrived:  
 
 `com.sun.jndi.ldap.Connection`
+
 ```java
     private Socket createSocket(String host, int port, String socketFactory,
             int connectTimeout) throws Exception {
