@@ -62,7 +62,14 @@ theme:
     # theme variables are defined by theme creator
     # you can access theme in template with ``theme`` namespace
     # for instance: {{theme.disqus}}
-    # vars:
+    vars:
+        navigation:
+            -
+                name: Home
+                link: /
+            -
+                name: About
+                link: /about
         #"disqus": "your_short_name",
         #"analytics": "UA-21475122-1",
 
@@ -72,3 +79,4 @@ template:
         # key: value
     filters:
         # key: value
+
