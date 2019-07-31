@@ -9,7 +9,7 @@ TBSchedule 4.1.1 Finally Released
 # Intro
 TBSchedule is a non-centralised, zookeeper adapted, console included, task/strategy supported and light-weight scheduling-in-place library from taobao(taobao.com). It was released as an open source project in about (2010~2012) by Taobao in the website `http://code.taobao.org/p/tbschedule` (But it has been down in 2017), with no license given. And after that it seems that there is no further developing on it.
 
-It's not a common distributed scheduling framework like ones support external shell, uploaded jars, cross languages and etc. Its mail purpose is the scenarios of spring-quartz but don't settle for quartz's design of `High Availability` and `Clustering`. It's another choice to try with.
+It's not a common distributed scheduling framework like ones support external shell, uploaded jars, cross languages and etc. Its main purpose is the scenarios of spring-quartz but don't settle for quartz's design of `High Availability` and `Clustering`. It's another choice to try with.
 
 Project location(Under Apache® License): https://github.com/jasonjoo2010/tbschedule
 
@@ -81,6 +81,6 @@ Details please refer to: https://github.com/jasonjoo2010/tbschedule
 # Summary
 It borns to be a light-weight and flexible scheduling and hope it could be a good choice on this.
 
-Thanks to the `Taobao's tbschedule`. Thanks to their spirit of open source. Thanks to Xuannan who was do most of the contribution of Taobao's tbschedule.
+Thanks to the `Taobao's tbschedule`. Thanks to their spirit of open source. Thanks to Xuannan who has done most of the contribution of Taobao's tbschedule.
 
 
