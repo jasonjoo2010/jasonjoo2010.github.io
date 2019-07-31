@@ -1,4 +1,4 @@
-TBSchedule 4.1.1 Finally Released
+TBSchedule 4.1.2 Finally Released
 ===
 
 - date: 2019-07-31
