@@ -3,9 +3,83 @@
     <title>Jason Joo</title>
     <link href="http://jasonjoo2010.github.io/feed.xml" rel="self" />
     <link href="http://jasonjoo2010.github.io/" />
-    <updated>2019-04-19T18:17:42+08:00</updated>
+    <updated>2019-07-31T10:17:22+08:00</updated>
     <id>http://jasonjoo2010.github.io/</id>
     <entry>
+        <title type="html"><![CDATA[TBSchedule 4.1.1 Finally Released]]></title>
+        <author><name>Jason</name></author>
+        <link href="http://jasonjoo2010.github.io/2019/07/31/tbschedule.html"/>
+        <published>2019-07-31T00:00:00+08:00</published>
+        <updated>2019-07-31T10:17:22+08:00</updated>
+        <id>http://jasonjoo2010.github.io/2019/07/31/tbschedule.html</id>
+        <category scheme="http://jasonjoo2010.github.io/tag/scheduling/" term="scheduling" label="scheduling" />
+        <category scheme="http://jasonjoo2010.github.io/tag/distributed/" term="distributed" label="distributed" />
+        <content type="html" xml:base="http://jasonjoo2010.github.io/" xml:lang="en">
+            <![CDATA[ <h1 id="toc_0">Intro</h1>
+<p>TBSchedule is a non-centralised, zookeeper adapted, console included, task/strategy supported and light-weight scheduling-in-place library from taobao(taobao.com). It was released as an open source project in about (2010~2012) by Taobao in the website <code>http://code.taobao.org/p/tbschedule</code> (But it has been down in 2017), with no license given. And after that it seems that there is no further developing on it.</p>
+<p>It&#39;s not a common distributed scheduling framework like ones support external shell, uploaded jars, cross languages and etc. Its mail purpose is the scenarios of spring-quartz but don&#39;t settle for quartz&#39;s design of <code>High Availability</code> and <code>Clustering</code>. It&#39;s another choice to try with.</p>
+<p>Project location(Under Apache® License): <a href="https://github.com/jasonjoo2010/tbschedule">github.com/jasonjoo2010/tbschedule</a></p>
+
+<h1 id="toc_1">Evolution</h1>
+
+<h2 id="toc_2">Traditional Versions (3.3.3.2 and earlier)</h2>
+<p>It uses <code>zookeeper</code> communicating with zookeeper server directly and sometimes suffers jitters on unstable connections. Surely only zookeeper storage is supported.</p>
+<p>A console server is provided as a client tool to manage the strategies, tasks and do operations under specified namespace.</p>
+<p>But there are problems in integrating:
+* Use log4j for logging but not interface.
+* Console is mixed with core library.
+* Workers&#39; distribution always includes the leader node. Which leads heavier load on leader.
+* Some small bugs when do operations.</p>
+
+<h2 id="toc_3">Enhanced Versions (3.3.4 to 4.0.x)</h2>
+<p>Enhanced versions solve all the problem in traditional version and:</p>
+
+<ul>
+<li>Separate console to an individual module.</li>
+<li>Make <code>zookeeper</code> up to date.</li>
+<li>Integrate <code>slf4j</code> as logging library.</li>
+<li>Shuffle first when do new scheduling.</li>
+<li>Introduce extension module. (4.0.x)</li>
+<li>Introduce <code>curator</code>. (4.0.x)</li>
+<li>Restructure console into spring-boot project. (4.0.x)</li>
+<li>Publish to maven central repository. (Under group id <code>com.yoloho.schedule</code>)</li>
+</ul>
+<p>So in 4.0.x you can use tbschedule easily (included in central repo) and logging friendly (slf4j) and more balanced (workers load balancing). If you implement queue consumer using Redis&#39; list you can easily use <code>tbschedule-extension-task</code> to do it.</p>
+<p>But it&#39;s not the end.</p>
+<p>For <code>more adaptive</code>, it&#39;s not enough to support zookeeper only. It should change depend on what the project use. For example a redis/jdbc only project we should not have to introduce a zookeeper cluster for scheduling. And also we should provide easier ways to integrate like xml/annotations.</p>
+<p>For <code>more international</code>, we should make more documentation using english.</p>
+<p>For <code>more reliable</code>, we should write more unit tests.</p>
+<p>For <code>learn easily</code>, we should provide some demonstrations.</p>
+<p>So that&#39;s why 4.1.x is raised.</p>
+
+<h2 id="toc_4">Multiple Storages (4.1.x)</h2>
+<p>Over half of codes have been restructured. <code>SPI</code> is used to support different <code>default</code> storage implementation and it also can be specified manually. Which means we can use multiple storages together in single project (If there&#39;s such scenario, eg. memory and zookeeper together).</p>
+<p>Here are storages supported:</p>
+
+<ul>
+<li>Memory. For local only scheduling driven by annotations. (EnableScheduleMemory/Strategy/Task)</li>
+<li>Zookeeper. (By <code>curator-framework</code>)</li>
+<li>Redis. (By <code>enhanced-cache</code>)</li>
+</ul>
+<p><code>JDBC</code> is on the way.</p>
+<p>In spring boot it&#39;s easy to initialize:</p>
+<div class="highlight"><pre><span></span><span class="nd">@EnableSchedule</span><span class="o">(</span>
+    <span class="c1">// Storage is zookeeper by default</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="s">&quot;192.168.123.106:2181&quot;</span><span class="o">,</span>
+    <span class="n">rootPath</span> <span class="o">=</span> <span class="s">&quot;/test/demo/tmp&quot;</span><span class="o">,</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="s">&quot;test&quot;</span><span class="o">,</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="s">&quot;test&quot;</span>
+<span class="o">)</span>
+</pre></div>
+<p>And then you can raise a <code>console</code> instance locally which has been packed and uploaded into maven central repository to manage the tasks and strategies.</p>
+<p>Details please refer to: <a href="https://github.com/jasonjoo2010/tbschedule">github.com/jasonjoo2010/tbschedule</a></p>
+
+<h1 id="toc_5">Summary</h1>
+<p>It borns to be a light-weight and flexible scheduling and hope it could be a good choice on this.</p>
+<p>Thanks to the <code>Taobao&#39;s tbschedule</code>. Thanks to their spirit of open source. Thanks to Xuannan who was do most of the contribution of Taobao&#39;s tbschedule.</p>
+]]>
+        </content>
+    </entry><entry>
         <title type="html"><![CDATA[&quot;No subject alternative names present&quot; on New JDK]]></title>
         <author><name>Jason</name></author>
         <link href="http://jasonjoo2010.github.io/2019/04/19/no_subject_alternative_names_present.html"/>
