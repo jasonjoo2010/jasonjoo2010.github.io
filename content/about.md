@@ -4,7 +4,9 @@
 
 Hi, I'm **Jason**.
 
-If you have questions, you can reach me by email <hblzxsj@gmail.com>.
+I know something in binary world. And I also good at `wood work`. I like hiking outdoor (Recently target on several mountains between 5000 and 5500 in elevation). I also like off-road, photography, CNC machine tool (manufactory one by myself using USBCNC), mechanical and electric design.
+
+If you have questions or are interested to contact, you can reach me through email <hblzxsj@gmail.com>.
 
 # Skills
 General
