@@ -307,7 +307,7 @@ That's the key point.
 
 # Conclusion
 1. When you get `No subject alternative names present` you should make sure the server certificate is in version 3 and has the proper SAN field value in extension.
-2. Related project upgraded from order JDK to JDK11 (JDK9 has not been tested in current case) may hit the problem. You can try to disable it by set property `com.sun.jndi.ldap.object.disableEndpointIdentification` to `false`.
+2. Related project upgraded from older JDK to JDK11 (JDK9 has not been tested in current case) may hit the problem. You can try to disable it by set property `com.sun.jndi.ldap.object.disableEndpointIdentification` to `false`.
 3. For manually created ssl connections you can enable/disable by setting the parameter `endpointIdentificationAlgorithm` of SSLSocket. Its value can only be `SSL`/`LDAPS`. `SSL` is for all the non-ldap connections.
 
 
