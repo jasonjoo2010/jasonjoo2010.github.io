@@ -21,7 +21,7 @@ One business unit in our teams has a technical stack of DUBBO/SpringBoot/Nginx. 
 
 So they have already figured to optimize it for days.
 
-First I checked and analysis the link chain. In most cases unstable RT may first due to the inefficient link chain: short connection, overflowed connection table, inappropriate send/recv buffer, synchronous IO waiting, problematic internal network and so on.
+First we checked and analysis the invocation chain. In most cases unstable RT may first due to the inefficient link chain: short connection, overflowed connection table, inappropriate send/recv buffer, synchronous IO waiting, problematic internal network and so on.
 
 The first spot of the incoming traffic is the NGINX nodes. They maintain the connections used by HTTP requests from clients(APP or partner) directly. 
 
@@ -50,37 +50,29 @@ They had optimized the JVM arguments on memory quota with <code>mx=1400m ms=1400
 
 Instance under average QPS(about 500 in average, with 800MB in memory) the YGC cycle keep a period about 30~38 seconds. Because the codes are quite simple and optimized I feel a little curious on what kinds of short-lifetime objects are in the Eden.
 
-After some attempts of sampling the result is shown below including unreachable objects(Using jmap and memory analyzer):
+After some attempts of sampling the result is shown below including unreachable objects:
 
-<img src="pic1.png" alt="Figure 1"><br>
-Figure 1
+<img src="pic1.png" alt="Count of unreachable objects">
 
 Here we can see the top N types of objects in retaining of memory and found that the curve of it is very steep and clustered in <code>char[]</code> / <code>byte[]</code> / <code>String</code>.
 
-<img src="pic2.png" alt="Figure 2: Memory usage"><br>
-Figure 2: Memory usage
+We can see visually there are obvious topN head in count of the objects in heap as below:
 
-<img src="pic3.png" alt="Figure 3: Object count"><br>
-Figure 3: Object count
+<img src="pic2.png" alt="Unreachable char array">
 
-Grouped by values:
+There are mainly two reasons generating so many <code>char[]</code> / <code>string</code>:
 
-<img src="pic4.png" alt="Figure 4: char[]"><br>
-Figure 4: char[]
+By doing this we got a new chart:
 
-<img src="pic5.png" alt="Figure 5: byte[]"><br>
-Figure 5: byte[]
+<img src="pic3.png" alt="After optimization">
 
-<img src="pic6.png" alt="Figure 6: String"><br>
-Figure 6: String
+It showed that the top N objects isn&#39;t significant any more. And the FGC period is triple than before.
 
-As shown in figure 4 the char arrays are mainly generated in following:
+Though the YGC is improved a lot but there are still some space to go further. We captured another objects unreachable <code>byte[]</code>:
 
-As shown in figure 5 most of the byte arrays come from hessian2 serializing/unserializing process.
+<img src="pic4.png" alt="bytes">
 
-As shown in figure 6 we can infer the possible segments:
-
-// XXX So I XXX
+<img src="pic5.png" alt="chars">
 
 <code>URL</code> is an issued design because it&#39;s designed to be immutable now and every modification on it will generates a new instance. So related blocks should be paid more attention and better to use <code>URLBuilder</code> obviously.
 
@@ -107,7 +99,7 @@ One business unit in our teams has a technical stack of DUBBO/SpringBoot/Nginx. 
 
 So they have already figured to optimize it for days.
 
-First I checked and analysis the link chain. In most cases unstable RT may first due to the inefficient link chain: short connection, overflowed connection table, inappropriate send/recv buffer, synchronous IO waiting, problematic internal network and so on.
+First we checked and analysis the invocation chain. In most cases unstable RT may first due to the inefficient link chain: short connection, overflowed connection table, inappropriate send/recv buffer, synchronous IO waiting, problematic internal network and so on.
 
 The first spot of the incoming traffic is the NGINX nodes. They maintain the connections used by HTTP requests from clients(APP or partner) directly. 
 
@@ -136,37 +128,29 @@ They had optimized the JVM arguments on memory quota with <code>mx=1400m ms=1400
 
 Instance under average QPS(about 500 in average, with 800MB in memory) the YGC cycle keep a period about 30~38 seconds. Because the codes are quite simple and optimized I feel a little curious on what kinds of short-lifetime objects are in the Eden.
 
-After some attempts of sampling the result is shown below including unreachable objects(Using jmap and memory analyzer):
+After some attempts of sampling the result is shown below including unreachable objects:
 
-<img src="pic1.png" alt="Figure 1"><br>
-Figure 1
+<img src="pic1.png" alt="Count of unreachable objects">
 
 Here we can see the top N types of objects in retaining of memory and found that the curve of it is very steep and clustered in <code>char[]</code> / <code>byte[]</code> / <code>String</code>.
 
-<img src="pic2.png" alt="Figure 2: Memory usage"><br>
-Figure 2: Memory usage
+We can see visually there are obvious topN head in count of the objects in heap as below:
 
-<img src="pic3.png" alt="Figure 3: Object count"><br>
-Figure 3: Object count
+<img src="pic2.png" alt="Unreachable char array">
 
-Grouped by values:
+There are mainly two reasons generating so many <code>char[]</code> / <code>string</code>:
 
-<img src="pic4.png" alt="Figure 4: char[]"><br>
-Figure 4: char[]
+By doing this we got a new chart:
 
-<img src="pic5.png" alt="Figure 5: byte[]"><br>
-Figure 5: byte[]
+<img src="pic3.png" alt="After optimization">
 
-<img src="pic6.png" alt="Figure 6: String"><br>
-Figure 6: String
+It showed that the top N objects isn&#39;t significant any more. And the FGC period is triple than before.
 
-As shown in figure 4 the char arrays are mainly generated in following:
+Though the YGC is improved a lot but there are still some space to go further. We captured another objects unreachable <code>byte[]</code>:
 
-As shown in figure 5 most of the byte arrays come from hessian2 serializing/unserializing process.
+<img src="pic4.png" alt="bytes">
 
-As shown in figure 6 we can infer the possible segments:
-
-// XXX So I XXX
+<img src="pic5.png" alt="chars">
 
 <code>URL</code> is an issued design because it&#39;s designed to be immutable now and every modification on it will generates a new instance. So related blocks should be paid more attention and better to use <code>URLBuilder</code> obviously.
 
