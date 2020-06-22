@@ -3,7 +3,7 @@
     <title>Jason Joo</title>
     <link href="http://jasonjoo2010.github.io/feed.xml" rel="self" />
     <link href="http://jasonjoo2010.github.io/" />
-    <updated>2020-06-22T16:18:59+08:00</updated>
+    <updated>2020-06-22T16:31:55+08:00</updated>
     <id>http://jasonjoo2010.github.io/</id>
     <entry>
         <title type="html"><![CDATA[An Efficient Way to Detect h264 Video Format]]></title>
@@ -33,6 +33,74 @@
 <h1 id="toc_3">Reference</h1>
 <p>[1] ISO/IEC base media file format <a href="https://en.wikipedia.org/wiki/ISO/IEC_base_media_file_format">en.wikipedia.org/wiki/ISO/IEC_base_media_file_format</a><br/>
 [2] ISO 14496-1 Media Format <a href="http://xhelmboyx.tripod.com/formats/mp4-layout.txt">xhelmboyx.tripod.com/formats/mp4-layout.txt</a>  </p>
+]]>
+        </content>
+    </entry><entry>
+        <title type="html"><![CDATA[dubbo GC Optimization]]></title>
+        <author><name>Jason</name></author>
+        <link href="http://jasonjoo2010.github.io/2019/11/08/dubbo-gc-optimization.html"/>
+        <published>2019-11-08T00:00:00+08:00</published>
+        <updated>2020-06-22T16:31:55+08:00</updated>
+        <id>http://jasonjoo2010.github.io/2019/11/08/dubbo-gc-optimization.html</id>
+        <category scheme="http://jasonjoo2010.github.io/tag/dubbo/" term="dubbo" label="dubbo" />
+        <category scheme="http://jasonjoo2010.github.io/tag/java/" term="java" label="java" />
+        <category scheme="http://jasonjoo2010.github.io/tag/gc/" term="gc" label="gc" />
+        <content type="html" xml:base="http://jasonjoo2010.github.io/" xml:lang="en">
+            <![CDATA[ <h1 id="toc_0">Background</h1>
+<p>One business unit in our teams has a technical stack of DUBBO/SpringBoot/Nginx. They have a traffic over 2000 requests/sec and 300 requests/sec(QPS) per instance serving through HTTP. Several DUBBO invocations might be made during one request. The average response time(RT) for top 2 entries is 6.23ms / 250ms. And the RT may increase to 50ms / 600ms in peak minutes.</p>
+<p>So they have already figured to optimize it for days.</p>
+
+<h1 id="toc_1">Invocation chain optimization</h1>
+<p>First we checked and analysis the invocation chain. In most cases unstable RT may first due to the inefficient link chain: short connection, overflowed connection table, inappropriate send/recv buffer, synchronous IO waiting, problematic internal network and so on.</p>
+
+<h2 id="toc_2">NGINX</h2>
+<p>The first spot of the incoming traffic is the NGINX nodes. They maintain the connections used by HTTP requests from clients(APP or partner) directly. </p>
+<p>The <code>keepalive</code> is set to 3 seconds and I increase it to 10 seconds to make a longer life of them avoiding unnecessary reconnecting. And it can be observed that the count connections between NGINX and java applications is still an unignore level.</p>
+<p>To make them persistent I add <code>keepalive 60</code> configuration into the <code>upstream</code> block in nginx configuration and 
+<code>
+proxy_http_version 1.1;
+proxy_set_header Connection &quot;&quot;;
+</code>
+to proxying configuration to enable HTTP1.1 and connection pool (holding) feature. Please pay attention that the <code>keepalive</code> here is not the same meaning in other scenario which means the maximum connections held on during serving. So we set it into 60 and actually they will not be shared between nginx workers. And the upstream nodes must support keepalive feature which is available from HTTP1.1 and we must add the <code>Connection</code> header to support it.</p>
+<p>After enabling HTTP1.1 between NGINX and java applications the connections became more &ldquo;persistent&rdquo; and the RT reduced to 2.6ms / 260ms in average. And we also make it smoother in peak minutes.</p>
+<p>During this process I found that though it has gain a better performance in RT it still costs so much CPU time and especially high cpu switching count.</p>
+
+<h1 id="toc_3">Asynchronous</h1>
+<p>To reduce the switching count I dig into the instance process more and found there was a thread pool with over 500 threads in it. It&#39;s used to accelerate the request processing on parallel invocation of DUBBO/Http. </p>
+<p>Actually thread pool should not be introduced here because all runnable threads are still waiting for the responses and asynchronous model should be used here. HttpClient can be enhanced by introducing <code>async-http-client</code> and DUBBO invocation can be called in asynchronous way. All we need to do is to dispatch the asynchronous calls out and to wait them to complete/fail.</p>
+<p>RT had been reduced to 2.3ms / 170ms after this.</p>
+<p>And again my eyes are on the frequency of YGC of JVM.</p>
+
+<h1 id="toc_4">YGC frequency</h1>
+<p>They had optimized the JVM arguments on memory quota with <code>mx=1400m ms=1400m mn=1g</code> after a few iterations to avoid unnecessary old generation space and more eden space.</p>
+<p>Instance under average QPS(about 500 in average, with 800MB in memory) the YGC cycle keep a period about 30~38 seconds. Because the codes are quite simple and optimized I feel a little curious on what kinds of short-lifetime objects are in the Eden.</p>
+<p>After some attempts of sampling the result is shown below including unreachable objects:</p>
+<p><img src="pic1.png" alt="Count of unreachable objects"/></p>
+<p>Here we can see the top N types of objects in retaining of memory and found that the curve of it is very steep and clustered in <code>char[]</code> / <code>byte[]</code> / <code>String</code>.</p>
+
+<h2 id="toc_5">Temporary Objects in Heap</h2>
+<p>We can see visually there are obvious topN head in count of the objects in heap as below:</p>
+<p><img src="pic2.png" alt="Unreachable char array"/></p>
+<p>There are mainly two reasons generating so many <code>char[]</code> / <code>string</code>:</p>
+
+<ol>
+<li>There are many joint of string for configuration name like <code>version</code> and <code>default.version</code> which is joined by <code>default.</code> and <code>version</code>. We can avoid it by build a LRU cache for it.</li>
+<li>There is unnecessary temporary object in monitor filter. We can rewrite it to reuse object.</li>
+</ol>
+<p>By doing this we got a new chart:</p>
+<p><img src="pic3.png" alt="After optimization"/></p>
+<p>It showed that the top N objects isn&#39;t significant any more. And the FGC period is triple than before.</p>
+
+<h1 id="toc_6">Remained</h1>
+<p>Though the YGC is improved a lot but there are still some space to go further. We captured another objects unreachable <code>byte[]</code>:</p>
+<p><img src="pic4.png" alt="bytes"/></p>
+<p><img src="pic5.png" alt="chars"/></p>
+
+<h2 id="toc_7">URL</h2>
+<p><code>URL</code> is an issued design because it&#39;s designed to be immutable now and every modification on it will generates a new instance. So related blocks should be paid more attention and better to use <code>URLBuilder</code> obviously.</p>
+
+<h2 id="toc_8">Hessian2</h2>
+<p><code>Hessian2ObjectInput</code> / <code>Hessian2ObjectOutput</code> are heavy and can cause visible pressure to YGC on a high QPS instance. So making them reusable or any other optimization is a worth thing in future. Surely for those default serialization protocol users.</p>
 ]]>
         </content>
     </entry><entry>
