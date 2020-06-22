@@ -1,0 +1,196 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Background - Jason Joo</title>
+        <script>if (top !== self) top.location = self.location;</script>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0" />
+        <link rel="stylesheet" href="/static/style.css?v=2c4d4" />
+        <link rel="stylesheet" href="/static/pygments.css?v=c6adc" />
+        
+        <link rel="alternate" type="application/rss+xml" href="/feed.xml" title="Jason Joo" />
+        <!--[if lt IE 9]>
+        <script type="text/javascript" src="/static/html5shiv.js?v=9a10c"></script>
+        <![endif]-->
+        
+        
+<link rel="canonical" href="/dubbo-gc-optimization.html" />
+<meta name="description" content="dubbo GC Optimization
+
+One business unit in our teams has a technical stack of DUBBO/SpringBoot/Nginx. They have a traffic over 2000 requests/sec and 300 requests/sec(QPS) per instance serving through HTTP. Several DUBBO invocations might be made during one request. The average response time(RT) for top 2 entries is 6.23ms / 250ms. And the RT may increase to 50ms / 600ms in peak minutes.
+
+So they have already figured to optimize it for days.
+
+First I checked and analysis the link chain. In most cases unstable RT may first due to the inefficient link chain: short connection, overflowed connection table, inappropriate send/recv buffer, synchronous IO waiting, problematic internal network and so on.
+
+The first spot of the incoming traffic is the NGINX nodes. They maintain the connections used by HTTP requests from clients(APP or partner) directly. 
+
+The <code>keepalive</code> is set to 3 seconds and I increase it to 10 seconds to make a longer life of them avoiding unnecessary reconnecting. And it can be observed that the count connections between NGINX and java applications is still an unignore level.
+
+To make them persistent I add <code>keepalive 60</code> configuration into the <code>upstream</code> block in nginx configuration and 
+<code>
+proxy_http_version 1.1;
+proxy_set_header Connection &quot;&quot;;
+</code>
+to proxying configuration to enable HTTP1.1 and connection pool (holding) feature. Please pay attention that the <code>keepalive</code> here is not the same meaning in other scenario which means the maximum connections held on during serving. So we set it into 60 and actually they will not be shared between nginx workers. And the upstream nodes must support keepalive feature which is available from HTTP1.1 and we must add the <code>Connection</code> header to support it.
+
+After enabling HTTP1.1 between NGINX and java applications the connections became more &quot;persistent&quot; and the RT reduced to 2.6ms / 260ms in average. And we also make it smoother in peak minutes.
+
+During this process I found that though it has gain a better performance in RT it still costs so much CPU time and especially high cpu switching count.
+
+To reduce the switching count I dig into the instance process more and found there was a thread pool with over 500 threads in it. It&#39;s used to accelerate the request processing on parallel invocation of DUBBO/Http. 
+
+Actually thread pool should not be introduced here because all runnable threads are still waiting for the responses and asynchronous model should be used here. HttpClient can be enhanced by introducing <code>async-http-client</code> and DUBBO invocation can be called in asynchronous way. All we need to do is to dispatch the asynchronous calls out and to wait them to complete/fail.
+
+RT had been reduced to 2.3ms / 170ms after this.
+
+And again my eyes are on the frequency of YGC of JVM.
+
+They had optimized the JVM arguments on memory quota with <code>mx=1400m ms=1400m mn=1g</code> after a few iterations to avoid unnecessary old generation space and more eden space.
+
+Instance under average QPS(about 500 in average, with 800MB in memory) the YGC cycle keep a period about 30~38 seconds. Because the codes are quite simple and optimized I feel a little curious on what kinds of short-lifetime objects are in the Eden.
+
+After some attempts of sampling the result is shown below including unreachable objects(Using jmap and memory analyzer):
+
+<img src="pic1.png" alt="Figure 1"><br>
+Figure 1
+
+Here we can see the top N types of objects in retaining of memory and found that the curve of it is very steep and clustered in <code>char[]</code> / <code>byte[]</code> / <code>String</code>.
+
+<img src="pic2.png" alt="Figure 2: Memory usage"><br>
+Figure 2: Memory usage
+
+<img src="pic3.png" alt="Figure 3: Object count"><br>
+Figure 3: Object count
+
+Grouped by values:
+
+<img src="pic4.png" alt="Figure 4: char[]"><br>
+Figure 4: char[]
+
+<img src="pic5.png" alt="Figure 5: byte[]"><br>
+Figure 5: byte[]
+
+<img src="pic6.png" alt="Figure 6: String"><br>
+Figure 6: String
+
+As shown in figure 4 the char arrays are mainly generated in following:
+
+As shown in figure 5 most of the byte arrays come from hessian2 serializing/unserializing process.
+
+As shown in figure 6 we can infer the possible segments:
+
+// XXX So I XXX
+
+<code>URL</code> is an issued design because it&#39;s designed to be immutable now and every modification on it will generates a new instance. So related blocks should be paid more attention and better to use <code>URLBuilder</code> obviously.
+
+<code>Hessian2ObjectInput</code> / <code>Hessian2ObjectOutput</code> are heavy and can cause visible pressure to YGC on a high QPS instance. So making them reusable or any other optimization is a worth thing in future. Surely for those default serialization protocol users." />
+
+    </head>
+    <body>
+        <header id="header">
+            <h1 id="brand"><a href="/">Jason Joo</a></h1>
+            <nav id="nav" role="navigation">
+                
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+            </nav>
+        </header>
+
+        <div id="main">
+            <div class="container">
+<div class="hentry">
+    <h1 class="entry-title">Background</h1>
+    <div class="entry-description">dubbo GC Optimization
+
+One business unit in our teams has a technical stack of DUBBO/SpringBoot/Nginx. They have a traffic over 2000 requests/sec and 300 requests/sec(QPS) per instance serving through HTTP. Several DUBBO invocations might be made during one request. The average response time(RT) for top 2 entries is 6.23ms / 250ms. And the RT may increase to 50ms / 600ms in peak minutes.
+
+So they have already figured to optimize it for days.
+
+First I checked and analysis the link chain. In most cases unstable RT may first due to the inefficient link chain: short connection, overflowed connection table, inappropriate send/recv buffer, synchronous IO waiting, problematic internal network and so on.
+
+The first spot of the incoming traffic is the NGINX nodes. They maintain the connections used by HTTP requests from clients(APP or partner) directly. 
+
+The <code>keepalive</code> is set to 3 seconds and I increase it to 10 seconds to make a longer life of them avoiding unnecessary reconnecting. And it can be observed that the count connections between NGINX and java applications is still an unignore level.
+
+To make them persistent I add <code>keepalive 60</code> configuration into the <code>upstream</code> block in nginx configuration and 
+<code>
+proxy_http_version 1.1;
+proxy_set_header Connection &quot;&quot;;
+</code>
+to proxying configuration to enable HTTP1.1 and connection pool (holding) feature. Please pay attention that the <code>keepalive</code> here is not the same meaning in other scenario which means the maximum connections held on during serving. So we set it into 60 and actually they will not be shared between nginx workers. And the upstream nodes must support keepalive feature which is available from HTTP1.1 and we must add the <code>Connection</code> header to support it.
+
+After enabling HTTP1.1 between NGINX and java applications the connections became more &quot;persistent&quot; and the RT reduced to 2.6ms / 260ms in average. And we also make it smoother in peak minutes.
+
+During this process I found that though it has gain a better performance in RT it still costs so much CPU time and especially high cpu switching count.
+
+To reduce the switching count I dig into the instance process more and found there was a thread pool with over 500 threads in it. It&#39;s used to accelerate the request processing on parallel invocation of DUBBO/Http. 
+
+Actually thread pool should not be introduced here because all runnable threads are still waiting for the responses and asynchronous model should be used here. HttpClient can be enhanced by introducing <code>async-http-client</code> and DUBBO invocation can be called in asynchronous way. All we need to do is to dispatch the asynchronous calls out and to wait them to complete/fail.
+
+RT had been reduced to 2.3ms / 170ms after this.
+
+And again my eyes are on the frequency of YGC of JVM.
+
+They had optimized the JVM arguments on memory quota with <code>mx=1400m ms=1400m mn=1g</code> after a few iterations to avoid unnecessary old generation space and more eden space.
+
+Instance under average QPS(about 500 in average, with 800MB in memory) the YGC cycle keep a period about 30~38 seconds. Because the codes are quite simple and optimized I feel a little curious on what kinds of short-lifetime objects are in the Eden.
+
+After some attempts of sampling the result is shown below including unreachable objects(Using jmap and memory analyzer):
+
+<img src="pic1.png" alt="Figure 1"><br>
+Figure 1
+
+Here we can see the top N types of objects in retaining of memory and found that the curve of it is very steep and clustered in <code>char[]</code> / <code>byte[]</code> / <code>String</code>.
+
+<img src="pic2.png" alt="Figure 2: Memory usage"><br>
+Figure 2: Memory usage
+
+<img src="pic3.png" alt="Figure 3: Object count"><br>
+Figure 3: Object count
+
+Grouped by values:
+
+<img src="pic4.png" alt="Figure 4: char[]"><br>
+Figure 4: char[]
+
+<img src="pic5.png" alt="Figure 5: byte[]"><br>
+Figure 5: byte[]
+
+<img src="pic6.png" alt="Figure 6: String"><br>
+Figure 6: String
+
+As shown in figure 4 the char arrays are mainly generated in following:
+
+As shown in figure 5 most of the byte arrays come from hessian2 serializing/unserializing process.
+
+As shown in figure 6 we can infer the possible segments:
+
+// XXX So I XXX
+
+<code>URL</code> is an issued design because it&#39;s designed to be immutable now and every modification on it will generates a new instance. So related blocks should be paid more attention and better to use <code>URLBuilder</code> obviously.
+
+<code>Hessian2ObjectInput</code> / <code>Hessian2ObjectOutput</code> are heavy and can cause visible pressure to YGC on a high QPS instance. So making them reusable or any other optimization is a worth thing in future. Surely for those default serialization protocol users.</div>
+    <div class="entry-content">
+        
+    </div>
+</div>
+</div>
+        </div>
+
+        <footer id="footer">
+            <hr class="end" />
+            
+            <p class="copyright">
+            <span class="software">
+                Powered by <a href="http://lab.lepture.com/liquidluck/">Felix Felicis</a> 3.8.1,
+            </span>
+            <span class="theme">
+                Theme <a href="https://github.com/lepture/liquidluck-theme-moment" rel="nofollow">moment</a> 1.0 by <a href="http://lepture.com">Hsiaoming Yang</a>
+            </span>
+            </p>
+        </footer>
+        <script type="text/javascript" src="/static/mobile.js?v=3b6df"></script>
+        
+    </body>
+</html>

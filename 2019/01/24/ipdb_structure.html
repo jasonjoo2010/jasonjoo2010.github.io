@@ -75,8 +75,21 @@ Though there are kinds of resolver libraries on official website(Which can be fo
 <p>Node is a 8 bytes record.<br/>
 Generally first part is <code>index</code> while second part is <code>position</code>.<br/>
 But <code>the order of index and position is inverted</code> when index value is greater or equal then <code>80</code>. Maybe they changed the format for some reasons and here is for backward compatibility.</p>
-<p>Indexes between 0 ~ 96(not included) are for IPV4.</p>
-<p>Normally <code>Node</code> is a link chain but when </p>
+<p>Indexes between 0 ~ 96(not included) are for IPV4 verification(real index nodes should be located after traversal): </p>
+<p>![Node structure between <a href="Node1.png">0, 96)</a></p>
+<p>Then the real indexes start from index 96. In summary the structure is:</p>
+<p><img src="Structure.png" alt="Nodes and data"/> </p>
+<p>The structure of data indexes is a tree based on each bit of ip address from bit0 to bit31. The maximum depth is 32 and it terminates at the index of next node which will beyond the maximum index(node_count in meta).</p>
+<p><img src="Tree.png" alt="Tree"/> </p>
+
+<h2 id="toc_5">Data Entry</h2>
+<p>The result is stored in data entry separated by TAB in UTF-8 charset. First 2 bytes store the length of string followed.</p>
+<p><img src="DataEntry.png" alt="Data Entry"/> </p>
+
+<h1 id="toc_6">Optimization</h1>
+<p>For best practice there are mainly two spots we can introduce a cache for.</p>
+<p>First is the depth of the tree. We can reduce it from 32 in maximum to 16 after introducing a 16 bits cache, that is, 65535 entries. We can build it once when loading into memory. It can help taking 50% off in time complexity.</p>
+<p>Second is we can build a LRU data cache because there are duplicated locations that different addresses point to. </p>
 
     </div>
 
