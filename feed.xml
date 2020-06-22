@@ -3,9 +3,39 @@
     <title>Jason Joo</title>
     <link href="http://jasonjoo2010.github.io/feed.xml" rel="self" />
     <link href="http://jasonjoo2010.github.io/" />
-    <updated>2020-06-22T15:00:35+08:00</updated>
+    <updated>2020-06-22T16:18:59+08:00</updated>
     <id>http://jasonjoo2010.github.io/</id>
     <entry>
+        <title type="html"><![CDATA[An Efficient Way to Detect h264 Video Format]]></title>
+        <author><name>Jason</name></author>
+        <link href="http://jasonjoo2010.github.io/2020/06/22/how_to_detect_h264_video_format.html"/>
+        <published>2020-06-22T00:00:00+08:00</published>
+        <updated>2020-06-22T16:18:59+08:00</updated>
+        <id>http://jasonjoo2010.github.io/2020/06/22/how_to_detect_h264_video_format.html</id>
+        <category scheme="http://jasonjoo2010.github.io/tag/h264/" term="h264" label="h264" />
+        <category scheme="http://jasonjoo2010.github.io/tag/video/" term="video" label="video" />
+        <category scheme="http://jasonjoo2010.github.io/tag/mpeg/" term="mpeg" label="mpeg" />
+        <category scheme="http://jasonjoo2010.github.io/tag/java/" term="java" label="java" />
+        <content type="html" xml:base="http://jasonjoo2010.github.io/" xml:lang="en">
+            <![CDATA[ <h1 id="toc_0">Background</h1>
+<p>We want to introduce short video clips as a new business into our product. For a startup we have numbers of videos which have length in time from 50 seconds to more than 5 minutes.</p>
+<p>But there is a problem importing them into the new business: Some of them aren&#39;t in h264 format which will not be supported in mobiles. We need to convert them into h264 before importing. So we need an efficient way to &ldquo;scan&rdquo; and pick them out then convert them into compatible format.</p>
+
+<h1 id="toc_1">ffmpeg Way</h1>
+<p>The first tool comes into mind is <code>ffmpeg</code>. We can download them first and use ffmpeg to get the video information to make the conclusion. But it will cost so much bandwidth and time to do so. So we pick it as an option if we don&#39;t find any more efficient way.</p>
+
+<h1 id="toc_2">MPEG Structure</h1>
+<p>After researching on how data is organized in MPEG file[1][2] we found that there are only quite small size data which is needed to decide encoding of video stream. We don&#39;t need to read the whole file actually.</p>
+<p>The MPEG file is organized by <code>boxes</code>. Each box represents different meta information and we can skip from one box to another according to the header of box. By doing this we can traverse the whole file by several small reads each read can be limited under 10kB. The box tree is demonstrated below:</p>
+<p><img src="boxes.jpg" alt="Box Tree"/></p>
+<p>Demo code could be reached at <a href="https://github.com/jasonjoo2010/h264-detector">github.com/jasonjoo2010/h264-detector</a></p>
+
+<h1 id="toc_3">Reference</h1>
+<p>[1] ISO/IEC base media file format <a href="https://en.wikipedia.org/wiki/ISO/IEC_base_media_file_format">en.wikipedia.org/wiki/ISO/IEC_base_media_file_format</a><br/>
+[2] ISO 14496-1 Media Format <a href="http://xhelmboyx.tripod.com/formats/mp4-layout.txt">xhelmboyx.tripod.com/formats/mp4-layout.txt</a>  </p>
+]]>
+        </content>
+    </entry><entry>
         <title type="html"><![CDATA[TBSchedule 4.1.2 Finally Released]]></title>
         <author><name>Jason</name></author>
         <link href="http://jasonjoo2010.github.io/2019/07/31/tbschedule.html"/>

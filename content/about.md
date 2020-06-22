@@ -8,7 +8,8 @@ I know something in binary world. And I also good at `wood work`. I like hiking 
 
 If you have questions or are interested to contact, you can reach me through email <hblzxsj@gmail.com>.
 
-# Skills
+## Skills
+
 General
 
 * Proficient with design and architecture of large distributed systems.
@@ -25,11 +26,20 @@ Languages
 
 * Language skills include JAVA/C/Lua/Shell/GoLang/PHP/Javascript/Python.
 
-# Projects
-https://github.com/alibaba/sentinel (as Committer)  
-https://github.com/projecteru2 (A simple container orchestration platform)  
-https://github.com/yoloho (Team Open Source Projects, in progress)  
-https://github.com/jasonjoo2010/tbschedule (Distributed scheduling, fully rewritten based on the concept of original one from Alibaba’s tbschedule) 
+## Projects
 
+https://github.com/jasonjoo2010/godao
+A lightweight, easy to use database access scaffold library in golang
 
+https://github.com/jasonjoo2010/goschedule
+A in process scheduling library in golang. Reference the design of `tbschedule` in java. Support more types of storage and simpler.
+
+https://github.com/alibaba/sentinel
+as Committer, a powerful flow control component enabling reliability, resilience and monitoring for micro services.
+
+https://github.com/yoloho
+Open Source Projects from our team.
+
+https://github.com/jasonjoo2010/tbschedule
+Distributed scheduling, fully rewritten based on the concept of original one from Alibaba’s tbschedule
 
