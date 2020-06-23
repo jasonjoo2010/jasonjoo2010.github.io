@@ -28,18 +28,18 @@ Languages
 
 ## Projects
 
-https://github.com/jasonjoo2010/godao
+https://github.com/jasonjoo2010/godao  
 A lightweight, easy to use database access scaffold library in golang
 
-https://github.com/jasonjoo2010/goschedule
+https://github.com/jasonjoo2010/goschedule  
 A in process scheduling library in golang. Reference the design of `tbschedule` in java. Support more types of storage and simpler.
 
-https://github.com/alibaba/sentinel
+https://github.com/alibaba/sentinel  
 as Committer, a powerful flow control component enabling reliability, resilience and monitoring for micro services.
 
-https://github.com/yoloho
+https://github.com/yoloho  
 Open Source Projects from our team.
 
-https://github.com/jasonjoo2010/tbschedule
+https://github.com/jasonjoo2010/tbschedule  
 Distributed scheduling, fully rewritten based on the concept of original one from Alibaba’s tbschedule
 
