@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <title>Jason Joo</title>
-    <link href="http://jasonjoo2010.github.io/feed.xml" rel="self" />
-    <link href="http://jasonjoo2010.github.io/" />
+    <link href="https://jasonjoo2010.github.io/feed.xml" rel="self" />
+    <link href="https://jasonjoo2010.github.io/" />
     <updated>2020-06-22T16:31:55+08:00</updated>
-    <id>http://jasonjoo2010.github.io/</id>
+    <id>https://jasonjoo2010.github.io/</id>
     <entry>
         <title type="html"><![CDATA[An Efficient Way to Detect h264 Video Format]]></title>
         <author><name>Jason</name></author>
-        <link href="http://jasonjoo2010.github.io/2020/06/22/how_to_detect_h264_video_format.html"/>
+        <link href="https://jasonjoo2010.github.io/2020/06/22/how_to_detect_h264_video_format.html"/>
         <published>2020-06-22T00:00:00+08:00</published>
         <updated>2020-06-22T16:18:59+08:00</updated>
-        <id>http://jasonjoo2010.github.io/2020/06/22/how_to_detect_h264_video_format.html</id>
-        <category scheme="http://jasonjoo2010.github.io/tag/h264/" term="h264" label="h264" />
-        <category scheme="http://jasonjoo2010.github.io/tag/video/" term="video" label="video" />
-        <category scheme="http://jasonjoo2010.github.io/tag/mpeg/" term="mpeg" label="mpeg" />
-        <category scheme="http://jasonjoo2010.github.io/tag/java/" term="java" label="java" />
-        <content type="html" xml:base="http://jasonjoo2010.github.io/" xml:lang="en">
+        <id>https://jasonjoo2010.github.io/2020/06/22/how_to_detect_h264_video_format.html</id>
+        <category scheme="https://jasonjoo2010.github.io/tag/h264/" term="h264" label="h264" />
+        <category scheme="https://jasonjoo2010.github.io/tag/video/" term="video" label="video" />
+        <category scheme="https://jasonjoo2010.github.io/tag/mpeg/" term="mpeg" label="mpeg" />
+        <category scheme="https://jasonjoo2010.github.io/tag/java/" term="java" label="java" />
+        <content type="html" xml:base="https://jasonjoo2010.github.io/" xml:lang="en">
             <![CDATA[ <h1 id="toc_0">Background</h1>
 <p>We want to introduce short video clips as a new business into our product. For a startup we have numbers of videos which have length in time from 50 seconds to more than 5 minutes.</p>
 <p>But there is a problem importing them into the new business: Some of them aren&#39;t in h264 format which will not be supported in mobiles. We need to convert them into h264 before importing. So we need an efficient way to &ldquo;scan&rdquo; and pick them out then convert them into compatible format.</p>
@@ -38,14 +38,14 @@
     </entry><entry>
         <title type="html"><![CDATA[dubbo GC Optimization]]></title>
         <author><name>Jason</name></author>
-        <link href="http://jasonjoo2010.github.io/2019/11/08/dubbo-gc-optimization.html"/>
+        <link href="https://jasonjoo2010.github.io/2019/11/08/dubbo-gc-optimization.html"/>
         <published>2019-11-08T00:00:00+08:00</published>
         <updated>2020-06-22T16:31:55+08:00</updated>
-        <id>http://jasonjoo2010.github.io/2019/11/08/dubbo-gc-optimization.html</id>
-        <category scheme="http://jasonjoo2010.github.io/tag/dubbo/" term="dubbo" label="dubbo" />
-        <category scheme="http://jasonjoo2010.github.io/tag/java/" term="java" label="java" />
-        <category scheme="http://jasonjoo2010.github.io/tag/gc/" term="gc" label="gc" />
-        <content type="html" xml:base="http://jasonjoo2010.github.io/" xml:lang="en">
+        <id>https://jasonjoo2010.github.io/2019/11/08/dubbo-gc-optimization.html</id>
+        <category scheme="https://jasonjoo2010.github.io/tag/dubbo/" term="dubbo" label="dubbo" />
+        <category scheme="https://jasonjoo2010.github.io/tag/java/" term="java" label="java" />
+        <category scheme="https://jasonjoo2010.github.io/tag/gc/" term="gc" label="gc" />
+        <content type="html" xml:base="https://jasonjoo2010.github.io/" xml:lang="en">
             <![CDATA[ <h1 id="toc_0">Background</h1>
 <p>One business unit in our teams has a technical stack of DUBBO/SpringBoot/Nginx. They have a traffic over 2000 requests/sec and 300 requests/sec(QPS) per instance serving through HTTP. Several DUBBO invocations might be made during one request. The average response time(RT) for top 2 entries is 6.23ms / 250ms. And the RT may increase to 50ms / 600ms in peak minutes.</p>
 <p>So they have already figured to optimize it for days.</p>
@@ -106,13 +106,13 @@ to proxying configuration to enable HTTP1.1 and connection pool (holding) featur
     </entry><entry>
         <title type="html"><![CDATA[TBSchedule 4.1.2 Finally Released]]></title>
         <author><name>Jason</name></author>
-        <link href="http://jasonjoo2010.github.io/2019/07/31/tbschedule.html"/>
+        <link href="https://jasonjoo2010.github.io/2019/07/31/tbschedule.html"/>
         <published>2019-07-31T00:00:00+08:00</published>
         <updated>2019-07-31T17:44:30+08:00</updated>
-        <id>http://jasonjoo2010.github.io/2019/07/31/tbschedule.html</id>
-        <category scheme="http://jasonjoo2010.github.io/tag/scheduling/" term="scheduling" label="scheduling" />
-        <category scheme="http://jasonjoo2010.github.io/tag/distributed/" term="distributed" label="distributed" />
-        <content type="html" xml:base="http://jasonjoo2010.github.io/" xml:lang="en">
+        <id>https://jasonjoo2010.github.io/2019/07/31/tbschedule.html</id>
+        <category scheme="https://jasonjoo2010.github.io/tag/scheduling/" term="scheduling" label="scheduling" />
+        <category scheme="https://jasonjoo2010.github.io/tag/distributed/" term="distributed" label="distributed" />
+        <content type="html" xml:base="https://jasonjoo2010.github.io/" xml:lang="en">
             <![CDATA[ <h1 id="toc_0">Intro</h1>
 <p>TBSchedule is a non-centralised, zookeeper adapted, console included, task/strategy supported and light-weight scheduling-in-place library from taobao(taobao.com). It was released as an open source project in about (2010~2012) by Taobao in the website <code>http://code.taobao.org/p/tbschedule</code> (But it has been down in 2017), with no license given. And after that it seems that there is no further developing on it.</p>
 <p>It&#39;s not a common distributed scheduling framework like ones support external shell, uploaded jars, cross languages and etc. Its main purpose is the scenarios of spring-quartz but don&#39;t settle for quartz&#39;s design of <code>High Availability</code> and <code>Clustering</code>. It&#39;s another choice to try with.</p>
@@ -180,15 +180,15 @@ to proxying configuration to enable HTTP1.1 and connection pool (holding) featur
     </entry><entry>
         <title type="html"><![CDATA[&quot;No subject alternative names present&quot; on New JDK]]></title>
         <author><name>Jason</name></author>
-        <link href="http://jasonjoo2010.github.io/2019/04/19/no_subject_alternative_names_present.html"/>
+        <link href="https://jasonjoo2010.github.io/2019/04/19/no_subject_alternative_names_present.html"/>
         <published>2019-04-19T00:00:00+08:00</published>
         <updated>2019-11-25T17:53:36+08:00</updated>
-        <id>http://jasonjoo2010.github.io/2019/04/19/no_subject_alternative_names_present.html</id>
-        <category scheme="http://jasonjoo2010.github.io/tag/ssl/" term="ssl" label="ssl" />
-        <category scheme="http://jasonjoo2010.github.io/tag/ldaps/" term="ldaps" label="ldaps" />
-        <category scheme="http://jasonjoo2010.github.io/tag/jdk/" term="jdk" label="jdk" />
-        <category scheme="http://jasonjoo2010.github.io/tag/java/" term="java" label="java" />
-        <content type="html" xml:base="http://jasonjoo2010.github.io/" xml:lang="en">
+        <id>https://jasonjoo2010.github.io/2019/04/19/no_subject_alternative_names_present.html</id>
+        <category scheme="https://jasonjoo2010.github.io/tag/ssl/" term="ssl" label="ssl" />
+        <category scheme="https://jasonjoo2010.github.io/tag/ldaps/" term="ldaps" label="ldaps" />
+        <category scheme="https://jasonjoo2010.github.io/tag/jdk/" term="jdk" label="jdk" />
+        <category scheme="https://jasonjoo2010.github.io/tag/java/" term="java" label="java" />
+        <content type="html" xml:base="https://jasonjoo2010.github.io/" xml:lang="en">
             <![CDATA[ <h1 id="toc_0">Abstract</h1>
 <p>In newer JDK implemetation(maybe JDK &gt;= 8) you may suffer a CertificateException of &ldquo;No subject alternative names present&rdquo; when trying to create a TLS/SSL connection before you make Encrypted/HTTPS/LDAPS request.  </p>
 <p>A new property named <code>com.sun.jndi.ldap.object.disableEndpointIdentification</code> has been introduced in new JDK versions (tested in JDK 11 compared to JDK 8) to decide whether make additional verification of endpoint name to certificate provided by server. The problem is that it will turn on by default. So if you suffering the problem you may try one of the solutions below:  </p>
@@ -468,13 +468,13 @@ to proxying configuration to enable HTTP1.1 and connection pool (holding) featur
     </entry><entry>
         <title type="html"><![CDATA[Java&#39;s Hostname Resolving Problem]]></title>
         <author><name>Jason</name></author>
-        <link href="http://jasonjoo2010.github.io/2019/04/17/java_ptr_issue.html"/>
+        <link href="https://jasonjoo2010.github.io/2019/04/17/java_ptr_issue.html"/>
         <published>2019-04-17T00:00:00+08:00</published>
         <updated>2019-04-17T19:09:51+08:00</updated>
-        <id>http://jasonjoo2010.github.io/2019/04/17/java_ptr_issue.html</id>
-        <category scheme="http://jasonjoo2010.github.io/tag/inetaddress/" term="InetAddress" label="InetAddress" />
-        <category scheme="http://jasonjoo2010.github.io/tag/java/" term="java" label="java" />
-        <content type="html" xml:base="http://jasonjoo2010.github.io/" xml:lang="en">
+        <id>https://jasonjoo2010.github.io/2019/04/17/java_ptr_issue.html</id>
+        <category scheme="https://jasonjoo2010.github.io/tag/inetaddress/" term="InetAddress" label="InetAddress" />
+        <category scheme="https://jasonjoo2010.github.io/tag/java/" term="java" label="java" />
+        <content type="html" xml:base="https://jasonjoo2010.github.io/" xml:lang="en">
             <![CDATA[ <h1 id="toc_0">Abstract</h1>
 <p>Java 8 on CentOS 5 will do extra PTR lookup when executing <code>InetAddress.getAllByName</code> for resolving. The extra PTR lookup will cause poor performance. We need replace it to custom implementation using custom name service or downgrade back to <strong>Java 7</strong>.  </p>
 <p>Java 7/8 or newer on CentOS 7 have no such issue.</p>
@@ -667,13 +667,13 @@ sys 0m0.000s
     </entry><entry>
         <title type="html"><![CDATA[IPDB Structure]]></title>
         <author><name>Jason</name></author>
-        <link href="http://jasonjoo2010.github.io/2019/01/24/ipdb_structure.html"/>
+        <link href="https://jasonjoo2010.github.io/2019/01/24/ipdb_structure.html"/>
         <published>2019-01-24T00:00:00+08:00</published>
         <updated>2020-06-22T15:00:35+08:00</updated>
-        <id>http://jasonjoo2010.github.io/2019/01/24/ipdb_structure.html</id>
-        <category scheme="http://jasonjoo2010.github.io/tag/ipdb/" term="ipdb" label="ipdb" />
-        <category scheme="http://jasonjoo2010.github.io/tag/java/" term="java" label="java" />
-        <content type="html" xml:base="http://jasonjoo2010.github.io/" xml:lang="en">
+        <id>https://jasonjoo2010.github.io/2019/01/24/ipdb_structure.html</id>
+        <category scheme="https://jasonjoo2010.github.io/tag/ipdb/" term="ipdb" label="ipdb" />
+        <category scheme="https://jasonjoo2010.github.io/tag/java/" term="java" label="java" />
+        <content type="html" xml:base="https://jasonjoo2010.github.io/" xml:lang="en">
             <![CDATA[ <h1 id="toc_0">Intro</h1>
 <p>IPDB is a new file format from <a href="https://ipip.net">ipip.net</a> storing ip geo data.<br/>
 It can support <code>more records</code> and <code>IPV4</code> records compared to old format <code>dat</code>.<br/>
@@ -729,13 +729,13 @@ But <code>the order of index and position is inverted</code> when index value is
     </entry><entry>
         <title type="html"><![CDATA[Why We Need Monitoring Druid]]></title>
         <author><name>Jason</name></author>
-        <link href="http://jasonjoo2010.github.io/2018/12/29/why_we_need_monitoring_druid.html"/>
+        <link href="https://jasonjoo2010.github.io/2018/12/29/why_we_need_monitoring_druid.html"/>
         <published>2018-12-29T00:00:00+08:00</published>
         <updated>2019-01-02T11:06:29+08:00</updated>
-        <id>http://jasonjoo2010.github.io/2018/12/29/why_we_need_monitoring_druid.html</id>
-        <category scheme="http://jasonjoo2010.github.io/tag/druid/" term="druid" label="druid" />
-        <category scheme="http://jasonjoo2010.github.io/tag/java/" term="java" label="java" />
-        <content type="html" xml:base="http://jasonjoo2010.github.io/" xml:lang="en">
+        <id>https://jasonjoo2010.github.io/2018/12/29/why_we_need_monitoring_druid.html</id>
+        <category scheme="https://jasonjoo2010.github.io/tag/druid/" term="druid" label="druid" />
+        <category scheme="https://jasonjoo2010.github.io/tag/java/" term="java" label="java" />
+        <content type="html" xml:base="https://jasonjoo2010.github.io/" xml:lang="en">
             <![CDATA[ <h1 id="toc_0">Issue occurred</h1>
 <p>Recently there is a very strange problem happening every night on about 20:00:05. The <code>SELECTED</code> provider (DUBBO) will reach the capacity of DUBBO thread pool which is limit to <strong>2000</strong> threads and in <strong>fixed</strong> pool model. Most of them blocked in the position of fetching connections through druid:</p>
 <div class="highlight"><pre><span></span><span class="o">-</span>  <span class="n">waiting</span> <span class="n">on</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">concurrent</span><span class="o">.</span><span class="na">locks</span><span class="o">.</span><span class="na">AbstractQueuedSynchronizer$ConditionObject</span><span class="err">@</span><span class="mi">63</span><span class="n">c4ac4b</span>
