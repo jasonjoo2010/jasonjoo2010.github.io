@@ -88,13 +88,13 @@
 </ul>
 <p><code>JDBC</code> is on the way.</p>
 <p>In spring boot it&#39;s easy to initialize:</p>
-<div class="highlight"><pre><span></span><span class="nd">@EnableSchedule</span><span class="o">(</span>
+<div class="highlight"><pre><span></span><span class="nd">@EnableSchedule</span><span class="p">(</span>
     <span class="c1">// Storage is zookeeper by default</span>
-    <span class="n">address</span> <span class="o">=</span> <span class="s">&quot;192.168.123.106:2181&quot;</span><span class="o">,</span>
-    <span class="n">rootPath</span> <span class="o">=</span> <span class="s">&quot;/test/demo/tmp&quot;</span><span class="o">,</span>
-    <span class="n">username</span> <span class="o">=</span> <span class="s">&quot;test&quot;</span><span class="o">,</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="s">&quot;192.168.123.106:2181&quot;</span><span class="p">,</span>
+    <span class="n">rootPath</span> <span class="o">=</span> <span class="s">&quot;/test/demo/tmp&quot;</span><span class="p">,</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="s">&quot;test&quot;</span><span class="p">,</span>
     <span class="n">password</span> <span class="o">=</span> <span class="s">&quot;test&quot;</span>
-<span class="o">)</span>
+<span class="p">)</span>
 </pre></div>
 <p>And then you can raise a <code>console</code> instance locally which has been packed and uploaded into maven central repository to manage the tasks and strategies.</p>
 <p>Details please refer to: <a href="https://github.com/jasonjoo2010/tbschedule">github.com/jasonjoo2010/tbschedule</a></p>

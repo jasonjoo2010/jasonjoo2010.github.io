@@ -3,9 +3,80 @@
     <title>Jason Joo</title>
     <link href="https://jasonjoo2010.github.io/feed.xml" rel="self" />
     <link href="https://jasonjoo2010.github.io/" />
-    <updated>2020-06-22T16:31:55+08:00</updated>
+    <updated>2020-11-30T20:56:38+08:00</updated>
     <id>https://jasonjoo2010.github.io/</id>
     <entry>
+        <title type="html"><![CDATA[Abnormal CPU Usage After Upgrading to Big Sur(11.0.1)]]></title>
+        <author><name>Jason</name></author>
+        <link href="https://jasonjoo2010.github.io/2020/11/30/abnormal_cpu_consumption_big_sur.html"/>
+        <published>2020-11-30T00:00:00+08:00</published>
+        <updated>2020-11-30T20:56:38+08:00</updated>
+        <id>https://jasonjoo2010.github.io/2020/11/30/abnormal_cpu_consumption_big_sur.html</id>
+        <category scheme="https://jasonjoo2010.github.io/tag/big-sur/" term="Big Sur" label="Big Sur" />
+        <category scheme="https://jasonjoo2010.github.io/tag/osx/" term="OSX" label="OSX" />
+        <content type="html" xml:base="https://jasonjoo2010.github.io/" xml:lang="en">
+            <![CDATA[ <h1 id="toc_0">Background</h1>
+<p>I upgraded to Big Sur several days ago. There were still some annoying issues under Catalina after several releases. For instance the <code>Mail.app</code> may occupy over 200% CPU and its memory consumption keep raising. I have seen it consumed about 35GB of memory. And the conditions causing it are unknown. I have tried even reimport all the mails. To take a rest from keeping attention on its memory consumption I wrote a cron job to do monitoring. It ran every 5 minutes and would kill it if it consumed more than 2 GB memory. When I saw the dot of Mail.app in the dock disappeared I knew that it was killed on the way of out of control. It&#39;s a tricky solution.</p>
+<p>So when I saw the new release called Big Sur I thought of the risk for a while. I really wanted my Mail.app issue solved but no more nasty bugs. Finally I did the upgrading.</p>
+
+<h1 id="toc_1">After Upgrading</h1>
+<p>Upgrading process cost me about an hour and be honestly I don&#39;t like the new style of UI which makes me feeling like my 2015mid MBP turns to be an iPad pro.</p>
+<p>But anyway it&#39;s amazing the Mail.app issue seems disappeared after recreating all my mail accounts(There was still a long way before this). But something was wrong that the fan just didn&#39;t stop for a while, kept working hard. I opened the monitor and found <code>secd</code> process consume 100% CPU.</p>
+<p>Life is too hard for me.</p>
+<p>Details can be reached <a href="https://discussions.apple.com/thread/252054223?login=true">here</a>.</p>
+
+<h1 id="toc_2">Temporary Workaround</h1>
+<p>Instead trying to relogin my iCloud account I made a temporary workaround. I wrote another cron job to kill <code>cloudd</code> periodically which makes it easier waiting a new release of Big Sur.</p>
+<p>My script is:</p>
+<div class="highlight"><pre><span></span><span class="ch">#!/bin/sh</span>
+
+<span class="nv">PID</span><span class="o">=</span><span class="k">$(</span>pgrep -u <span class="nv">$UID</span> ^cloudd$<span class="k">)</span>
+<span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;no</span><span class="nv">$PID</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;no&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nb">exit</span>
+<span class="k">fi</span>
+<span class="nb">kill</span> <span class="nv">$PID</span>
+
+sleep <span class="m">30</span>
+<span class="nv">PID</span><span class="o">=</span><span class="k">$(</span>pgrep -u <span class="nv">$UID</span> ^cloudd$<span class="k">)</span>
+<span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;no</span><span class="nv">$PID</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;no&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+        <span class="nb">exit</span>
+<span class="k">fi</span>
+<span class="nb">kill</span> <span class="nv">$PID</span>
+</pre></div>
+<p>Save it to your home directory (eg. <code>~/check_cloudd</code>) and grant it executable by</p>
+<div class="highlight"><pre><span></span>chmod +x ~/check_cloudd
+</pre></div>
+<p>You can add it into your cron by</p>
+<div class="highlight"><pre><span></span>crontab -e
+</pre></div>
+<p>and take this for reference (use your own path)</p>
+
+<pre><code>* * * * * ~/check_cloudd</code></pre>
+<p>It will kill <code>cloudd</code> every 30 seconds.</p>
+]]>
+        </content>
+    </entry><entry>
+        <title type="html"><![CDATA[GoSchedule v0.1.2]]></title>
+        <author><name>Jason</name></author>
+        <link href="https://jasonjoo2010.github.io/2020/06/30/goschedule.html"/>
+        <published>2020-06-30T00:00:00+08:00</published>
+        <updated>2020-11-30T08:44:31+08:00</updated>
+        <id>https://jasonjoo2010.github.io/2020/06/30/goschedule.html</id>
+        <category scheme="https://jasonjoo2010.github.io/tag/golang/" term="golang" label="golang" />
+        <category scheme="https://jasonjoo2010.github.io/tag/scheduling/" term="scheduling" label="scheduling" />
+        <category scheme="https://jasonjoo2010.github.io/tag/distributed/" term="distributed" label="distributed" />
+        <category scheme="https://jasonjoo2010.github.io/tag/concurrent/" term="concurrent" label="concurrent" />
+        <content type="html" xml:base="https://jasonjoo2010.github.io/" xml:lang="en">
+            <![CDATA[ <h1 id="toc_0">Introduction</h1>
+<p>We have some distributed jobs which is scheduled between different application processes (nodes). So how to make them high available and well balanced is important. In Java we have <a href="https://jasonjoo2010.github.io/2019/07/31/tbschedule.html">tbschedule</a> and we also have some applications in GoLang.</p>
+<p>So this is a distributed scheduling library in GoLang like tbschedule in Java.</p>
+
+<h1 id="toc_1">Project</h1>
+<p>Project home: <a href="https://github.com/jasonjoo2010/goschedule">github.com/jasonjoo2010/goschedule</a></p>
+<p><img src="https://github.com/jasonjoo2010/goschedule/raw/master/doc/design.png" alt="Design"/></p>
+]]>
+        </content>
+    </entry><entry>
         <title type="html"><![CDATA[An Efficient Way to Detect h264 Video Format]]></title>
         <author><name>Jason</name></author>
         <link href="https://jasonjoo2010.github.io/2020/06/22/how_to_detect_h264_video_format.html"/>
@@ -161,13 +232,13 @@ to proxying configuration to enable HTTP1.1 and connection pool (holding) featur
 </ul>
 <p><code>JDBC</code> is on the way.</p>
 <p>In spring boot it&#39;s easy to initialize:</p>
-<div class="highlight"><pre><span></span><span class="nd">@EnableSchedule</span><span class="o">(</span>
+<div class="highlight"><pre><span></span><span class="nd">@EnableSchedule</span><span class="p">(</span>
     <span class="c1">// Storage is zookeeper by default</span>
-    <span class="n">address</span> <span class="o">=</span> <span class="s">&quot;192.168.123.106:2181&quot;</span><span class="o">,</span>
-    <span class="n">rootPath</span> <span class="o">=</span> <span class="s">&quot;/test/demo/tmp&quot;</span><span class="o">,</span>
-    <span class="n">username</span> <span class="o">=</span> <span class="s">&quot;test&quot;</span><span class="o">,</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="s">&quot;192.168.123.106:2181&quot;</span><span class="p">,</span>
+    <span class="n">rootPath</span> <span class="o">=</span> <span class="s">&quot;/test/demo/tmp&quot;</span><span class="p">,</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="s">&quot;test&quot;</span><span class="p">,</span>
     <span class="n">password</span> <span class="o">=</span> <span class="s">&quot;test&quot;</span>
-<span class="o">)</span>
+<span class="p">)</span>
 </pre></div>
 <p>And then you can raise a <code>console</code> instance locally which has been packed and uploaded into maven central repository to manage the tasks and strategies.</p>
 <p>Details please refer to: <a href="https://github.com/jasonjoo2010/tbschedule">github.com/jasonjoo2010/tbschedule</a></p>
@@ -208,7 +279,7 @@ to proxying configuration to enable HTTP1.1 and connection pool (holding) featur
 <p>After hours&#39; research we found that the exception was mainly targeting to the unsuitable certificate the server gave out. SSLContext will do additional hostname(or calling endpoint) verification after passed through <code>TrustManager[]</code>. Logic is located in <code>sun.security.util.HostnameChecker</code> with two form: <code>IP</code> and <code>Domain</code> matching with certificate(In this case it&#39;s IP).  </p>
 <p>Checker will fetch <code>SAN</code> (Subject Alternative Names) from extension of certificate and compare it with the server actually ip address. Extension structure is defined with version 3 of X509 but our certificate is generated by some old scripts in version 1 and only have <code>CN=xxx.xxx.xxx.xxx</code> in Subject field. So the logic will fail and throw the exception.</p>
 <p>Because the <code>jersey</code> backend works correctly so I guess it&#39;s not a required verification. Working a little more I figure out the key statement:  </p>
-<div class="highlight"><pre><span></span><span class="n">sslParameters</span><span class="o">.</span><span class="na">setEndpointIdentificationAlgorithm</span><span class="o">(</span><span class="s">&quot;HTTPS&quot;</span><span class="o">);</span>
+<div class="highlight"><pre><span></span><span class="n">sslParameters</span><span class="p">.</span><span class="na">setEndpointIdentificationAlgorithm</span><span class="p">(</span><span class="s">&quot;HTTPS&quot;</span><span class="p">);</span>
 </pre></div>
 <p>The netty backend adds the specific parameter manually which will enable the additional verification.  </p>
 <p>There are two sulutions:</p>
@@ -223,209 +294,209 @@ to proxying configuration to enable HTTP1.1 and connection pool (holding) featur
 <p>Things seem like going well but the same error happens again two days later. The affected logic is the connection of LDAP(Using SSL). It&#39;s strange because it works well before.  </p>
 <p>Fortunately we can debug it in source code level (package <code>sun.security</code>) because we change the JDK to version 11 days ago. After some more time we arrived:  </p>
 <p><code>sun.security.util.HostnameChecker</code>  </p>
-<div class="highlight"><pre><span></span><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">matchIP</span><span class="o">(</span><span class="n">String</span> <span class="n">expectedIP</span><span class="o">,</span> <span class="n">X509Certificate</span> <span class="n">cert</span><span class="o">)</span>
-            <span class="kd">throws</span> <span class="n">CertificateException</span> <span class="o">{</span>
-        <span class="n">Collection</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">subjAltNames</span> <span class="o">=</span> <span class="n">cert</span><span class="o">.</span><span class="na">getSubjectAlternativeNames</span><span class="o">();</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">subjAltNames</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+<div class="highlight"><pre><span></span><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">matchIP</span><span class="p">(</span><span class="n">String</span> <span class="n">expectedIP</span><span class="p">,</span> <span class="n">X509Certificate</span> <span class="n">cert</span><span class="p">)</span>
+            <span class="kd">throws</span> <span class="n">CertificateException</span> <span class="p">{</span>
+        <span class="n">Collection</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">subjAltNames</span> <span class="o">=</span> <span class="n">cert</span><span class="p">.</span><span class="na">getSubjectAlternativeNames</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">subjAltNames</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">throw</span> <span class="k">new</span> <span class="n">CertificateException</span>
-                                <span class="o">(</span><span class="s">&quot;No subject alternative names present&quot;</span><span class="o">);</span>
-        <span class="o">}</span>
-        <span class="k">for</span> <span class="o">(</span><span class="n">List</span><span class="o">&lt;?&gt;</span> <span class="n">next</span> <span class="o">:</span> <span class="n">subjAltNames</span><span class="o">)</span> <span class="o">{</span>
+                                <span class="p">(</span><span class="s">&quot;No subject alternative names present&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">List</span><span class="o">&lt;?&gt;</span> <span class="n">next</span> <span class="p">:</span> <span class="n">subjAltNames</span><span class="p">)</span> <span class="p">{</span>
             <span class="c1">// For IP address, it needs to be exact match</span>
-            <span class="k">if</span> <span class="o">(((</span><span class="n">Integer</span><span class="o">)</span><span class="n">next</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">)).</span><span class="na">intValue</span><span class="o">()</span> <span class="o">==</span> <span class="n">ALTNAME_IP</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">String</span> <span class="n">ipAddress</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span><span class="n">next</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-                <span class="k">if</span> <span class="o">(</span><span class="n">expectedIP</span><span class="o">.</span><span class="na">equalsIgnoreCase</span><span class="o">(</span><span class="n">ipAddress</span><span class="o">))</span> <span class="o">{</span>
-                    <span class="k">return</span><span class="o">;</span>
-                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="p">(((</span><span class="n">Integer</span><span class="p">)</span><span class="n">next</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="mi">0</span><span class="p">)).</span><span class="na">intValue</span><span class="p">()</span> <span class="o">==</span> <span class="n">ALTNAME_IP</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">String</span> <span class="n">ipAddress</span> <span class="o">=</span> <span class="p">(</span><span class="n">String</span><span class="p">)</span><span class="n">next</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">expectedIP</span><span class="p">.</span><span class="na">equalsIgnoreCase</span><span class="p">(</span><span class="n">ipAddress</span><span class="p">))</span> <span class="p">{</span>
+                    <span class="k">return</span><span class="p">;</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
                     <span class="c1">// compare InetAddress objects in order to ensure</span>
                     <span class="c1">// equality between a long IPv6 address and its</span>
                     <span class="c1">// abbreviated form.</span>
-                    <span class="k">try</span> <span class="o">{</span>
-                        <span class="k">if</span> <span class="o">(</span><span class="n">InetAddress</span><span class="o">.</span><span class="na">getByName</span><span class="o">(</span><span class="n">expectedIP</span><span class="o">).</span><span class="na">equals</span><span class="o">(</span>
-                                <span class="n">InetAddress</span><span class="o">.</span><span class="na">getByName</span><span class="o">(</span><span class="n">ipAddress</span><span class="o">)))</span> <span class="o">{</span>
-                            <span class="k">return</span><span class="o">;</span>
-                        <span class="o">}</span>
-                    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">UnknownHostException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-                    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SecurityException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{}</span>
-                <span class="o">}</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="n">CertificateException</span><span class="o">(</span><span class="s">&quot;No subject alternative &quot;</span> <span class="o">+</span>
+                    <span class="k">try</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">InetAddress</span><span class="p">.</span><span class="na">getByName</span><span class="p">(</span><span class="n">expectedIP</span><span class="p">).</span><span class="na">equals</span><span class="p">(</span>
+                                <span class="n">InetAddress</span><span class="p">.</span><span class="na">getByName</span><span class="p">(</span><span class="n">ipAddress</span><span class="p">)))</span> <span class="p">{</span>
+                            <span class="k">return</span><span class="p">;</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">UnknownHostException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">SecurityException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="n">CertificateException</span><span class="p">(</span><span class="s">&quot;No subject alternative &quot;</span> <span class="o">+</span>
                         <span class="s">&quot;names matching &quot;</span> <span class="o">+</span> <span class="s">&quot;IP address &quot;</span> <span class="o">+</span>
-                        <span class="n">expectedIP</span> <span class="o">+</span> <span class="s">&quot; found&quot;</span><span class="o">);</span>
-    <span class="o">}</span>
+                        <span class="n">expectedIP</span> <span class="o">+</span> <span class="s">&quot; found&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
 </pre></div>
 <p>Oh it enters into the <code>matchIP</code> too like we were in the first case. But the stack may be different. After more debugging:  </p>
 <p><code>sun.security.ssl.SSLContextImpl</code></p>
 <div class="highlight"><pre><span></span><span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">checkServerTrusted</span><span class="o">(</span><span class="n">X509Certificate</span><span class="o">[]</span> <span class="n">chain</span><span class="o">,</span> <span class="n">String</span> <span class="n">authType</span><span class="o">,</span>
-            <span class="n">SSLEngine</span> <span class="n">engine</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CertificateException</span> <span class="o">{</span>
-        <span class="n">tm</span><span class="o">.</span><span class="na">checkServerTrusted</span><span class="o">(</span><span class="n">chain</span><span class="o">,</span> <span class="n">authType</span><span class="o">);</span>
-        <span class="n">checkAdditionalTrust</span><span class="o">(</span><span class="n">chain</span><span class="o">,</span> <span class="n">authType</span><span class="o">,</span> <span class="n">engine</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
-    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">checkServerTrusted</span><span class="p">(</span><span class="n">X509Certificate</span><span class="o">[]</span> <span class="n">chain</span><span class="p">,</span> <span class="n">String</span> <span class="n">authType</span><span class="p">,</span>
+            <span class="n">SSLEngine</span> <span class="n">engine</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">CertificateException</span> <span class="p">{</span>
+        <span class="n">tm</span><span class="p">.</span><span class="na">checkServerTrusted</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">authType</span><span class="p">);</span>
+        <span class="n">checkAdditionalTrust</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">authType</span><span class="p">,</span> <span class="n">engine</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+    <span class="p">}</span>
 
-    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">checkAdditionalTrust</span><span class="o">(</span><span class="n">X509Certificate</span><span class="o">[]</span> <span class="n">chain</span><span class="o">,</span> <span class="n">String</span> <span class="n">authType</span><span class="o">,</span>
-                <span class="n">Socket</span> <span class="n">socket</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">isClient</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CertificateException</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">socket</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">socket</span><span class="o">.</span><span class="na">isConnected</span><span class="o">()</span> <span class="o">&amp;&amp;</span>
-                                    <span class="n">socket</span> <span class="k">instanceof</span> <span class="n">SSLSocket</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">checkAdditionalTrust</span><span class="p">(</span><span class="n">X509Certificate</span><span class="o">[]</span> <span class="n">chain</span><span class="p">,</span> <span class="n">String</span> <span class="n">authType</span><span class="p">,</span>
+                <span class="n">Socket</span> <span class="n">socket</span><span class="p">,</span> <span class="kt">boolean</span> <span class="n">isClient</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">CertificateException</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">socket</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">socket</span><span class="p">.</span><span class="na">isConnected</span><span class="p">()</span> <span class="o">&amp;&amp;</span>
+                                    <span class="n">socket</span> <span class="k">instanceof</span> <span class="n">SSLSocket</span><span class="p">)</span> <span class="p">{</span>
 
-            <span class="n">SSLSocket</span> <span class="n">sslSocket</span> <span class="o">=</span> <span class="o">(</span><span class="n">SSLSocket</span><span class="o">)</span><span class="n">socket</span><span class="o">;</span>
-            <span class="n">SSLSession</span> <span class="n">session</span> <span class="o">=</span> <span class="n">sslSocket</span><span class="o">.</span><span class="na">getHandshakeSession</span><span class="o">();</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">session</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-                <span class="k">throw</span> <span class="k">new</span> <span class="n">CertificateException</span><span class="o">(</span><span class="s">&quot;No handshake session&quot;</span><span class="o">);</span>
-            <span class="o">}</span>
+            <span class="n">SSLSocket</span> <span class="n">sslSocket</span> <span class="o">=</span> <span class="p">(</span><span class="n">SSLSocket</span><span class="p">)</span><span class="n">socket</span><span class="p">;</span>
+            <span class="n">SSLSession</span> <span class="n">session</span> <span class="o">=</span> <span class="n">sslSocket</span><span class="p">.</span><span class="na">getHandshakeSession</span><span class="p">();</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">session</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="n">CertificateException</span><span class="p">(</span><span class="s">&quot;No handshake session&quot;</span><span class="p">);</span>
+            <span class="p">}</span>
 
             <span class="c1">// check endpoint identity</span>
-            <span class="n">String</span> <span class="n">identityAlg</span> <span class="o">=</span> <span class="n">sslSocket</span><span class="o">.</span><span class="na">getSSLParameters</span><span class="o">().</span>
-                                        <span class="n">getEndpointIdentificationAlgorithm</span><span class="o">();</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">identityAlg</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">identityAlg</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">String</span> <span class="n">hostname</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getPeerHost</span><span class="o">();</span>
-                <span class="n">X509TrustManagerImpl</span><span class="o">.</span><span class="na">checkIdentity</span><span class="o">(</span>
-                                    <span class="n">hostname</span><span class="o">,</span> <span class="n">chain</span><span class="o">[</span><span class="mi">0</span><span class="o">],</span> <span class="n">identityAlg</span><span class="o">);</span>
-            <span class="o">}</span>
+            <span class="n">String</span> <span class="n">identityAlg</span> <span class="o">=</span> <span class="n">sslSocket</span><span class="p">.</span><span class="na">getSSLParameters</span><span class="p">().</span>
+                                        <span class="n">getEndpointIdentificationAlgorithm</span><span class="p">();</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">identityAlg</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">identityAlg</span><span class="p">.</span><span class="na">length</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">String</span> <span class="n">hostname</span> <span class="o">=</span> <span class="n">session</span><span class="p">.</span><span class="na">getPeerHost</span><span class="p">();</span>
+                <span class="n">X509TrustManagerImpl</span><span class="p">.</span><span class="na">checkIdentity</span><span class="p">(</span>
+                                    <span class="n">hostname</span><span class="p">,</span> <span class="n">chain</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">,</span> <span class="n">identityAlg</span><span class="p">);</span>
+            <span class="p">}</span>
 
             <span class="c1">// try the best to check the algorithm constraints</span>
-            <span class="n">AlgorithmConstraints</span> <span class="n">constraints</span><span class="o">;</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">ProtocolVersion</span><span class="o">.</span><span class="na">useTLS12PlusSpec</span><span class="o">(</span><span class="n">session</span><span class="o">.</span><span class="na">getProtocol</span><span class="o">()))</span> <span class="o">{</span>
-                <span class="k">if</span> <span class="o">(</span><span class="n">session</span> <span class="k">instanceof</span> <span class="n">ExtendedSSLSession</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">AlgorithmConstraints</span> <span class="n">constraints</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">ProtocolVersion</span><span class="p">.</span><span class="na">useTLS12PlusSpec</span><span class="p">(</span><span class="n">session</span><span class="p">.</span><span class="na">getProtocol</span><span class="p">()))</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">session</span> <span class="k">instanceof</span> <span class="n">ExtendedSSLSession</span><span class="p">)</span> <span class="p">{</span>
                     <span class="n">ExtendedSSLSession</span> <span class="n">extSession</span> <span class="o">=</span>
-                                    <span class="o">(</span><span class="n">ExtendedSSLSession</span><span class="o">)</span><span class="n">session</span><span class="o">;</span>
+                                    <span class="p">(</span><span class="n">ExtendedSSLSession</span><span class="p">)</span><span class="n">session</span><span class="p">;</span>
                     <span class="n">String</span><span class="o">[]</span> <span class="n">peerSupportedSignAlgs</span> <span class="o">=</span>
-                            <span class="n">extSession</span><span class="o">.</span><span class="na">getLocalSupportedSignatureAlgorithms</span><span class="o">();</span>
+                            <span class="n">extSession</span><span class="p">.</span><span class="na">getLocalSupportedSignatureAlgorithms</span><span class="p">();</span>
 
-                    <span class="n">constraints</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SSLAlgorithmConstraints</span><span class="o">(</span>
-                                    <span class="n">sslSocket</span><span class="o">,</span> <span class="n">peerSupportedSignAlgs</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
-                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="n">constraints</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SSLAlgorithmConstraints</span><span class="p">(</span>
+                                    <span class="n">sslSocket</span><span class="p">,</span> <span class="n">peerSupportedSignAlgs</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
                     <span class="n">constraints</span> <span class="o">=</span>
-                            <span class="k">new</span> <span class="n">SSLAlgorithmConstraints</span><span class="o">(</span><span class="n">sslSocket</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
-                <span class="o">}</span>
-            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-                <span class="n">constraints</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SSLAlgorithmConstraints</span><span class="o">(</span><span class="n">sslSocket</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
-            <span class="o">}</span>
+                            <span class="k">new</span> <span class="n">SSLAlgorithmConstraints</span><span class="p">(</span><span class="n">sslSocket</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="n">constraints</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SSLAlgorithmConstraints</span><span class="p">(</span><span class="n">sslSocket</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+            <span class="p">}</span>
 
-            <span class="n">checkAlgorithmConstraints</span><span class="o">(</span><span class="n">chain</span><span class="o">,</span> <span class="n">constraints</span><span class="o">,</span> <span class="n">isClient</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
+            <span class="n">checkAlgorithmConstraints</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">constraints</span><span class="p">,</span> <span class="n">isClient</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 </pre></div>
 <p>It shows that the verification is relying the value of <code>sslSocket.getSSLParameters().getEndpointIdentificationAlgorithm();</code>.  </p>
 <p>But we don&#39;t set it to any value when creating the ssl socket and printing its value also shows to <code>null</code>:  </p>
 <div class="highlight"><pre><span></span><span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">Socket</span> <span class="nf">createSocket</span><span class="o">(</span><span class="n">String</span> <span class="n">string</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">UnknownHostException</span> <span class="o">{</span>
-        <span class="n">SSLSocketImpl</span> <span class="n">ssl</span> <span class="o">=</span> <span class="o">(</span><span class="n">SSLSocketImpl</span><span class="o">)</span><span class="n">socketFactory</span><span class="o">.</span><span class="na">createSocket</span><span class="o">(</span><span class="n">string</span><span class="o">,</span> <span class="n">i</span><span class="o">);</span>
-        <span class="n">SSLParameters</span> <span class="n">param</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="na">getSSLParameters</span><span class="o">();</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">param</span><span class="o">.</span><span class="na">getEndpointIdentificationAlgorithm</span><span class="o">());</span>
-        <span class="k">return</span> <span class="n">ssl</span><span class="o">;</span>
-    <span class="o">}</span>
+    <span class="kd">public</span> <span class="n">Socket</span> <span class="nf">createSocket</span><span class="p">(</span><span class="n">String</span> <span class="n">string</span><span class="p">,</span> <span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="p">,</span> <span class="n">UnknownHostException</span> <span class="p">{</span>
+        <span class="n">SSLSocketImpl</span> <span class="n">ssl</span> <span class="o">=</span> <span class="p">(</span><span class="n">SSLSocketImpl</span><span class="p">)</span><span class="n">socketFactory</span><span class="p">.</span><span class="na">createSocket</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+        <span class="n">SSLParameters</span> <span class="n">param</span> <span class="o">=</span> <span class="n">ssl</span><span class="p">.</span><span class="na">getSSLParameters</span><span class="p">();</span>
+        <span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">param</span><span class="p">.</span><span class="na">getEndpointIdentificationAlgorithm</span><span class="p">());</span>
+        <span class="k">return</span> <span class="n">ssl</span><span class="p">;</span>
+    <span class="p">}</span>
 </pre></div>
 <p>Console output:</p>
 
 <pre><code>null</code></pre>
 <p>So who sets it? After deeper tracing I arrived:  </p>
 <p><code>com.sun.jndi.ldap.Connection</code></p>
-<div class="highlight"><pre><span></span><span class="kd">private</span> <span class="n">Socket</span> <span class="nf">createSocket</span><span class="o">(</span><span class="n">String</span> <span class="n">host</span><span class="o">,</span> <span class="kt">int</span> <span class="n">port</span><span class="o">,</span> <span class="n">String</span> <span class="n">socketFactory</span><span class="o">,</span>
-            <span class="kt">int</span> <span class="n">connectTimeout</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+<div class="highlight"><pre><span></span><span class="kd">private</span> <span class="n">Socket</span> <span class="nf">createSocket</span><span class="p">(</span><span class="n">String</span> <span class="n">host</span><span class="p">,</span> <span class="kt">int</span> <span class="n">port</span><span class="p">,</span> <span class="n">String</span> <span class="n">socketFactory</span><span class="p">,</span>
+            <span class="kt">int</span> <span class="n">connectTimeout</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="p">{</span>
 
-        <span class="n">Socket</span> <span class="n">socket</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="n">Socket</span> <span class="n">socket</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
 
-        <span class="k">if</span> <span class="o">(</span><span class="n">socketFactory</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">socketFactory</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
 
             <span class="c1">// create the factory</span>
 
-            <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&quot;unchecked&quot;</span><span class="o">)</span>
+            <span class="nd">@SuppressWarnings</span><span class="p">(</span><span class="s">&quot;unchecked&quot;</span><span class="p">)</span>
             <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">SocketFactory</span><span class="o">&gt;</span> <span class="n">socketFactoryClass</span> <span class="o">=</span>
-                <span class="o">(</span><span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">SocketFactory</span><span class="o">&gt;)</span><span class="n">Obj</span><span class="o">.</span><span class="na">helper</span><span class="o">.</span><span class="na">loadClass</span><span class="o">(</span><span class="n">socketFactory</span><span class="o">);</span>
+                <span class="p">(</span><span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">SocketFactory</span><span class="o">&gt;</span><span class="p">)</span><span class="n">Obj</span><span class="p">.</span><span class="na">helper</span><span class="p">.</span><span class="na">loadClass</span><span class="p">(</span><span class="n">socketFactory</span><span class="p">);</span>
             <span class="n">Method</span> <span class="n">getDefault</span> <span class="o">=</span>
-                <span class="n">socketFactoryClass</span><span class="o">.</span><span class="na">getMethod</span><span class="o">(</span><span class="s">&quot;getDefault&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">&lt;?&gt;[]{});</span>
-            <span class="n">SocketFactory</span> <span class="n">factory</span> <span class="o">=</span> <span class="o">(</span><span class="n">SocketFactory</span><span class="o">)</span> <span class="n">getDefault</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="kc">null</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{});</span>
+                <span class="n">socketFactoryClass</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="s">&quot;getDefault&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">&lt;?&gt;[]</span><span class="p">{});</span>
+            <span class="n">SocketFactory</span> <span class="n">factory</span> <span class="o">=</span> <span class="p">(</span><span class="n">SocketFactory</span><span class="p">)</span> <span class="n">getDefault</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]</span><span class="p">{});</span>
 
             <span class="c1">// create the socket</span>
 
-            <span class="k">if</span> <span class="o">(</span><span class="n">connectTimeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">connectTimeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
 
                 <span class="n">InetSocketAddress</span> <span class="n">endpoint</span> <span class="o">=</span>
-                        <span class="n">createInetSocketAddress</span><span class="o">(</span><span class="n">host</span><span class="o">,</span> <span class="n">port</span><span class="o">);</span>
+                        <span class="n">createInetSocketAddress</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
 
                 <span class="c1">// unconnected socket</span>
-                <span class="n">socket</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="na">createSocket</span><span class="o">();</span>
+                <span class="n">socket</span> <span class="o">=</span> <span class="n">factory</span><span class="p">.</span><span class="na">createSocket</span><span class="p">();</span>
 
-                <span class="k">if</span> <span class="o">(</span><span class="n">debug</span><span class="o">)</span> <span class="o">{</span>
-                    <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Connection: creating socket with &quot;</span> <span class="o">+</span>
-                            <span class="s">&quot;a timeout using supplied socket factory&quot;</span><span class="o">);</span>
-                <span class="o">}</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">debug</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Connection: creating socket with &quot;</span> <span class="o">+</span>
+                            <span class="s">&quot;a timeout using supplied socket factory&quot;</span><span class="p">);</span>
+                <span class="p">}</span>
 
                 <span class="c1">// connected socket</span>
-                <span class="n">socket</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="n">endpoint</span><span class="o">,</span> <span class="n">connectTimeout</span><span class="o">);</span>
-            <span class="o">}</span>
+                <span class="n">socket</span><span class="p">.</span><span class="na">connect</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">connectTimeout</span><span class="p">);</span>
+            <span class="p">}</span>
 
             <span class="c1">// continue (but ignore connectTimeout)</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">socket</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-                <span class="k">if</span> <span class="o">(</span><span class="n">debug</span><span class="o">)</span> <span class="o">{</span>
-                    <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Connection: creating socket using &quot;</span> <span class="o">+</span>
-                        <span class="s">&quot;supplied socket factory&quot;</span><span class="o">);</span>
-                <span class="o">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">socket</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">debug</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Connection: creating socket using &quot;</span> <span class="o">+</span>
+                        <span class="s">&quot;supplied socket factory&quot;</span><span class="p">);</span>
+                <span class="p">}</span>
                 <span class="c1">// connected socket</span>
-                <span class="n">socket</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="na">createSocket</span><span class="o">(</span><span class="n">host</span><span class="o">,</span> <span class="n">port</span><span class="o">);</span>
-            <span class="o">}</span>
-        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="n">socket</span> <span class="o">=</span> <span class="n">factory</span><span class="p">.</span><span class="na">createSocket</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 
-            <span class="k">if</span> <span class="o">(</span><span class="n">connectTimeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">connectTimeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
 
-                    <span class="n">InetSocketAddress</span> <span class="n">endpoint</span> <span class="o">=</span> <span class="n">createInetSocketAddress</span><span class="o">(</span><span class="n">host</span><span class="o">,</span> <span class="n">port</span><span class="o">);</span>
+                    <span class="n">InetSocketAddress</span> <span class="n">endpoint</span> <span class="o">=</span> <span class="n">createInetSocketAddress</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
 
-                    <span class="n">socket</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Socket</span><span class="o">();</span>
+                    <span class="n">socket</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Socket</span><span class="p">();</span>
 
-                    <span class="k">if</span> <span class="o">(</span><span class="n">debug</span><span class="o">)</span> <span class="o">{</span>
-                        <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Connection: creating socket with &quot;</span> <span class="o">+</span>
-                            <span class="s">&quot;a timeout&quot;</span><span class="o">);</span>
-                    <span class="o">}</span>
-                    <span class="n">socket</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="n">endpoint</span><span class="o">,</span> <span class="n">connectTimeout</span><span class="o">);</span>
-            <span class="o">}</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">debug</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Connection: creating socket with &quot;</span> <span class="o">+</span>
+                            <span class="s">&quot;a timeout&quot;</span><span class="p">);</span>
+                    <span class="p">}</span>
+                    <span class="n">socket</span><span class="p">.</span><span class="na">connect</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">connectTimeout</span><span class="p">);</span>
+            <span class="p">}</span>
 
             <span class="c1">// continue (but ignore connectTimeout)</span>
 
-            <span class="k">if</span> <span class="o">(</span><span class="n">socket</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-                <span class="k">if</span> <span class="o">(</span><span class="n">debug</span><span class="o">)</span> <span class="o">{</span>
-                    <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Connection: creating socket&quot;</span><span class="o">);</span>
-                <span class="o">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">socket</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">debug</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Connection: creating socket&quot;</span><span class="p">);</span>
+                <span class="p">}</span>
                 <span class="c1">// connected socket</span>
-                <span class="n">socket</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Socket</span><span class="o">(</span><span class="n">host</span><span class="o">,</span> <span class="n">port</span><span class="o">);</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
+                <span class="n">socket</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Socket</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
 
         <span class="c1">// For LDAP connect timeouts on LDAP over SSL connections must treat</span>
         <span class="c1">// the SSL handshake following socket connection as part of the timeout.</span>
         <span class="c1">// So explicitly set a socket read timeout, trigger the SSL handshake,</span>
         <span class="c1">// then reset the timeout.</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">socket</span> <span class="k">instanceof</span> <span class="n">SSLSocket</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">SSLSocket</span> <span class="n">sslSocket</span> <span class="o">=</span> <span class="o">(</span><span class="n">SSLSocket</span><span class="o">)</span> <span class="n">socket</span><span class="o">;</span>
-            <span class="k">if</span> <span class="o">(!</span><span class="n">IS_HOSTNAME_VERIFICATION_DISABLED</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">SSLParameters</span> <span class="n">param</span> <span class="o">=</span> <span class="n">sslSocket</span><span class="o">.</span><span class="na">getSSLParameters</span><span class="o">();</span>
-                <span class="n">param</span><span class="o">.</span><span class="na">setEndpointIdentificationAlgorithm</span><span class="o">(</span><span class="s">&quot;LDAPS&quot;</span><span class="o">);</span>
-                <span class="n">sslSocket</span><span class="o">.</span><span class="na">setSSLParameters</span><span class="o">(</span><span class="n">param</span><span class="o">);</span>
-            <span class="o">}</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">connectTimeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-                <span class="kt">int</span> <span class="n">socketTimeout</span> <span class="o">=</span> <span class="n">sslSocket</span><span class="o">.</span><span class="na">getSoTimeout</span><span class="o">();</span>
-                <span class="n">sslSocket</span><span class="o">.</span><span class="na">setSoTimeout</span><span class="o">(</span><span class="n">connectTimeout</span><span class="o">);</span> <span class="c1">// reuse full timeout value</span>
-                <span class="n">sslSocket</span><span class="o">.</span><span class="na">startHandshake</span><span class="o">();</span>
-                <span class="n">sslSocket</span><span class="o">.</span><span class="na">setSoTimeout</span><span class="o">(</span><span class="n">socketTimeout</span><span class="o">);</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-        <span class="k">return</span> <span class="n">socket</span><span class="o">;</span>
-    <span class="o">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">socket</span> <span class="k">instanceof</span> <span class="n">SSLSocket</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">SSLSocket</span> <span class="n">sslSocket</span> <span class="o">=</span> <span class="p">(</span><span class="n">SSLSocket</span><span class="p">)</span> <span class="n">socket</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">IS_HOSTNAME_VERIFICATION_DISABLED</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">SSLParameters</span> <span class="n">param</span> <span class="o">=</span> <span class="n">sslSocket</span><span class="p">.</span><span class="na">getSSLParameters</span><span class="p">();</span>
+                <span class="n">param</span><span class="p">.</span><span class="na">setEndpointIdentificationAlgorithm</span><span class="p">(</span><span class="s">&quot;LDAPS&quot;</span><span class="p">);</span>
+                <span class="n">sslSocket</span><span class="p">.</span><span class="na">setSSLParameters</span><span class="p">(</span><span class="n">param</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">connectTimeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">socketTimeout</span> <span class="o">=</span> <span class="n">sslSocket</span><span class="p">.</span><span class="na">getSoTimeout</span><span class="p">();</span>
+                <span class="n">sslSocket</span><span class="p">.</span><span class="na">setSoTimeout</span><span class="p">(</span><span class="n">connectTimeout</span><span class="p">);</span> <span class="c1">// reuse full timeout value</span>
+                <span class="n">sslSocket</span><span class="p">.</span><span class="na">startHandshake</span><span class="p">();</span>
+                <span class="n">sslSocket</span><span class="p">.</span><span class="na">setSoTimeout</span><span class="p">(</span><span class="n">socketTimeout</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">socket</span><span class="p">;</span>
+    <span class="p">}</span>
 </pre></div>
 <p>So the last block rely to the value of <code>IS_HOSTNAME_VERIFICATION_DISABLED</code>, and:</p>
 <div class="highlight"><pre><span></span><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">IS_HOSTNAME_VERIFICATION_DISABLED</span>
-            <span class="o">=</span> <span class="n">hostnameVerificationDisabledValue</span><span class="o">();</span>
+            <span class="o">=</span> <span class="n">hostnameVerificationDisabledValue</span><span class="p">();</span>
 
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">hostnameVerificationDisabledValue</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">PrivilegedAction</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">act</span> <span class="o">=</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span>
-                <span class="s">&quot;com.sun.jndi.ldap.object.disableEndpointIdentification&quot;</span><span class="o">);</span>
-        <span class="n">String</span> <span class="n">prop</span> <span class="o">=</span> <span class="n">AccessController</span><span class="o">.</span><span class="na">doPrivileged</span><span class="o">(</span><span class="n">act</span><span class="o">);</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">prop</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="k">return</span> <span class="n">prop</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">?</span> <span class="kc">true</span> <span class="o">:</span> <span class="n">Boolean</span><span class="o">.</span><span class="na">parseBoolean</span><span class="o">(</span><span class="n">prop</span><span class="o">);</span>
-    <span class="o">}</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">hostnameVerificationDisabledValue</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">PrivilegedAction</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">act</span> <span class="o">=</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="p">.</span><span class="na">getProperty</span><span class="p">(</span>
+                <span class="s">&quot;com.sun.jndi.ldap.object.disableEndpointIdentification&quot;</span><span class="p">);</span>
+        <span class="n">String</span> <span class="n">prop</span> <span class="o">=</span> <span class="n">AccessController</span><span class="p">.</span><span class="na">doPrivileged</span><span class="p">(</span><span class="n">act</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">prop</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">prop</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">()</span> <span class="o">?</span> <span class="kc">true</span> <span class="p">:</span> <span class="n">Boolean</span><span class="p">.</span><span class="na">parseBoolean</span><span class="p">(</span><span class="n">prop</span><span class="p">);</span>
+    <span class="p">}</span>
 </pre></div>
 <p>Things are clear. By default the property <code>com.sun.jndi.ldap.object.disableEndpointIdentification</code> is empty and the value will be set to <code>true</code> which means additional verification will be taken. But why the logic worked correctly before?  </p>
 <p>I turn to <code>Open JDK 7/8</code> for source code reference and find they are lack of the final piece of code:  </p>
@@ -433,22 +504,22 @@ to proxying configuration to enable HTTP1.1 and connection pool (holding) featur
         <span class="c1">// the SSL handshake following socket connection as part of the timeout.</span>
         <span class="c1">// So explicitly set a socket read timeout, trigger the SSL handshake,</span>
         <span class="c1">// then reset the timeout.</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">socket</span> <span class="k">instanceof</span> <span class="n">SSLSocket</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">SSLSocket</span> <span class="n">sslSocket</span> <span class="o">=</span> <span class="o">(</span><span class="n">SSLSocket</span><span class="o">)</span> <span class="n">socket</span><span class="o">;</span>
-            <span class="k">if</span> <span class="o">(!</span><span class="n">IS_HOSTNAME_VERIFICATION_DISABLED</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">SSLParameters</span> <span class="n">param</span> <span class="o">=</span> <span class="n">sslSocket</span><span class="o">.</span><span class="na">getSSLParameters</span><span class="o">();</span>
-                <span class="n">param</span><span class="o">.</span><span class="na">setEndpointIdentificationAlgorithm</span><span class="o">(</span><span class="s">&quot;LDAPS&quot;</span><span class="o">);</span>
-                <span class="n">sslSocket</span><span class="o">.</span><span class="na">setSSLParameters</span><span class="o">(</span><span class="n">param</span><span class="o">);</span>
-            <span class="o">}</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">connectTimeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-                <span class="kt">int</span> <span class="n">socketTimeout</span> <span class="o">=</span> <span class="n">sslSocket</span><span class="o">.</span><span class="na">getSoTimeout</span><span class="o">();</span>
-                <span class="n">sslSocket</span><span class="o">.</span><span class="na">setSoTimeout</span><span class="o">(</span><span class="n">connectTimeout</span><span class="o">);</span> <span class="c1">// reuse full timeout value</span>
-                <span class="n">sslSocket</span><span class="o">.</span><span class="na">startHandshake</span><span class="o">();</span>
-                <span class="n">sslSocket</span><span class="o">.</span><span class="na">setSoTimeout</span><span class="o">(</span><span class="n">socketTimeout</span><span class="o">);</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-        <span class="k">return</span> <span class="n">socket</span><span class="o">;</span>
-    <span class="o">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">socket</span> <span class="k">instanceof</span> <span class="n">SSLSocket</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">SSLSocket</span> <span class="n">sslSocket</span> <span class="o">=</span> <span class="p">(</span><span class="n">SSLSocket</span><span class="p">)</span> <span class="n">socket</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">IS_HOSTNAME_VERIFICATION_DISABLED</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">SSLParameters</span> <span class="n">param</span> <span class="o">=</span> <span class="n">sslSocket</span><span class="p">.</span><span class="na">getSSLParameters</span><span class="p">();</span>
+                <span class="n">param</span><span class="p">.</span><span class="na">setEndpointIdentificationAlgorithm</span><span class="p">(</span><span class="s">&quot;LDAPS&quot;</span><span class="p">);</span>
+                <span class="n">sslSocket</span><span class="p">.</span><span class="na">setSSLParameters</span><span class="p">(</span><span class="n">param</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">connectTimeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">socketTimeout</span> <span class="o">=</span> <span class="n">sslSocket</span><span class="p">.</span><span class="na">getSoTimeout</span><span class="p">();</span>
+                <span class="n">sslSocket</span><span class="p">.</span><span class="na">setSoTimeout</span><span class="p">(</span><span class="n">connectTimeout</span><span class="p">);</span> <span class="c1">// reuse full timeout value</span>
+                <span class="n">sslSocket</span><span class="p">.</span><span class="na">startHandshake</span><span class="p">();</span>
+                <span class="n">sslSocket</span><span class="p">.</span><span class="na">setSoTimeout</span><span class="p">(</span><span class="n">socketTimeout</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">socket</span><span class="p">;</span>
+    <span class="p">}</span>
 </pre></div>
 <p>That&#39;s the key point.</p>
 
@@ -488,23 +559,23 @@ to proxying configuration to enable HTTP1.1 and connection pool (holding) featur
 
 <h2 id="toc_3">Using Logging</h2>
 <p>It seems like an easy problem so i add several logging lines with execution timing. They cut the logic into several parts. And finally we arrived here:  </p>
-<div class="highlight"><pre><span></span><span class="n">String</span> <span class="n">json</span> <span class="o">=</span> <span class="n">HttpClientUtil</span><span class="o">.</span><span class="na">postRequest</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">map</span><span class="o">);</span>
-<span class="n">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">json</span><span class="o">);</span>
-<span class="k">if</span> <span class="o">(</span><span class="n">jsonObject</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">jsonObject</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="s">&quot;data&quot;</span><span class="o">))</span> <span class="o">{</span>
- <span class="n">JSONObject</span> <span class="n">dataObject</span> <span class="o">=</span> <span class="n">jsonObject</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">&quot;data&quot;</span><span class="o">);</span>
- <span class="k">if</span> <span class="o">(</span><span class="n">dataObject</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">dataObject</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="s">&quot;oriPic&quot;</span><span class="o">))</span> <span class="o">{</span>
-     <span class="n">String</span> <span class="n">pic</span> <span class="o">=</span> <span class="n">dataObject</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&quot;oriPic&quot;</span><span class="o">);</span>
-     <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">isNotEmpty</span><span class="o">(</span><span class="n">pic</span><span class="o">))</span> <span class="o">{</span>
-         <span class="k">return</span> <span class="n">SearchUtils</span><span class="o">.</span><span class="na">IMG_HOST</span> <span class="o">+</span> <span class="n">pic</span><span class="o">;</span>
-     <span class="o">}</span>
- <span class="o">}</span>
-<span class="o">}</span>
+<div class="highlight"><pre><span></span><span class="n">String</span> <span class="n">json</span> <span class="o">=</span> <span class="n">HttpClientUtil</span><span class="p">.</span><span class="na">postRequest</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">map</span><span class="p">);</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="p">.</span><span class="na">parseObject</span><span class="p">(</span><span class="n">json</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">jsonObject</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">jsonObject</span><span class="p">.</span><span class="na">containsKey</span><span class="p">(</span><span class="s">&quot;data&quot;</span><span class="p">))</span> <span class="p">{</span>
+ <span class="n">JSONObject</span> <span class="n">dataObject</span> <span class="o">=</span> <span class="n">jsonObject</span><span class="p">.</span><span class="na">getJSONObject</span><span class="p">(</span><span class="s">&quot;data&quot;</span><span class="p">);</span>
+ <span class="k">if</span> <span class="p">(</span><span class="n">dataObject</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">dataObject</span><span class="p">.</span><span class="na">containsKey</span><span class="p">(</span><span class="s">&quot;oriPic&quot;</span><span class="p">))</span> <span class="p">{</span>
+     <span class="n">String</span> <span class="n">pic</span> <span class="o">=</span> <span class="n">dataObject</span><span class="p">.</span><span class="na">getString</span><span class="p">(</span><span class="s">&quot;oriPic&quot;</span><span class="p">);</span>
+     <span class="k">if</span> <span class="p">(</span><span class="n">StringUtils</span><span class="p">.</span><span class="na">isNotEmpty</span><span class="p">(</span><span class="n">pic</span><span class="p">))</span> <span class="p">{</span>
+         <span class="k">return</span> <span class="n">SearchUtils</span><span class="p">.</span><span class="na">IMG_HOST</span> <span class="o">+</span> <span class="n">pic</span><span class="p">;</span>
+     <span class="p">}</span>
+ <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 <p>The api outside also has performance statistic as Figure 2:  </p>
 <p><img src="Figure2.png" alt="Figure 2"/>  </p>
 <p>Which means it&#39;s running good(avg &lt; 10ms).<br/>
 So I add a timeout(2 seconds) to make it better first as:  </p>
-<div class="highlight"><pre><span></span><span class="n">String</span> <span class="n">json</span> <span class="o">=</span> <span class="n">HttpClientUtil</span><span class="o">.</span><span class="na">postRequest</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">map</span><span class="o">,</span> <span class="mi">2000</span><span class="o">);</span>
+<div class="highlight"><pre><span></span><span class="n">String</span> <span class="n">json</span> <span class="o">=</span> <span class="n">HttpClientUtil</span><span class="p">.</span><span class="na">postRequest</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">map</span><span class="p">,</span> <span class="mi">2000</span><span class="p">);</span>
 </pre></div>
 <p>But things have not changed.<br/>
 So I dug in the access logs for global view and found:  </p>
@@ -584,17 +655,17 @@ sys 0m0.000s
 
 <h1 id="toc_7">Environment Research</h1>
 <p>I write a test to reproduce the issue between different versions and environments:  </p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">java.net.InetAddress</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.net.UnknownHostException</span><span class="o">;</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">java.net.InetAddress</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">java.net.UnknownHostException</span><span class="p">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span><span class="o">,</span> <span class="n">UnknownHostException</span> <span class="o">{</span>
-        <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">InetAddress</span><span class="o">.</span><span class="na">getAllByName</span><span class="o">(</span><span class="s">&quot;google.com&quot;</span><span class="o">);</span>
-            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">40000</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span><span class="p">,</span> <span class="n">UnknownHostException</span> <span class="p">{</span>
+        <span class="k">while</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">InetAddress</span><span class="p">.</span><span class="na">getAllByName</span><span class="p">(</span><span class="s">&quot;google.com&quot;</span><span class="p">);</span>
+            <span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="mi">40000</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 <p>I run it on CentOS 5/7 and Java 7/8:</p>
 
@@ -627,15 +698,15 @@ sys 0m0.000s
 <span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp"></span>
 
 <span class="kt">void</span> <span class="nf">resolve</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">struct</span> <span class="n">hostent</span> <span class="o">*</span><span class="n">he</span><span class="p">;</span>
-    <span class="k">struct</span> <span class="n">in_addr</span> <span class="o">**</span><span class="n">addr_list</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="nc">hostent</span> <span class="o">*</span><span class="n">he</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="nc">in_addr</span> <span class="o">**</span><span class="n">addr_list</span><span class="p">;</span>
     <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
     <span class="n">he</span> <span class="o">=</span> <span class="n">gethostbyname</span><span class="p">(</span><span class="s">&quot;google.com&quot;</span><span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">he</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">printf</span><span class="p">(</span><span class="s">&quot;resolve error</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
         <span class="k">return</span><span class="p">;</span>
     <span class="p">}</span>
-    <span class="n">addr_list</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">in_addr</span> <span class="o">**</span><span class="p">)</span><span class="n">he</span><span class="o">-&gt;</span><span class="n">h_addr_list</span><span class="p">;</span>
+    <span class="n">addr_list</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">in_addr</span> <span class="o">**</span><span class="p">)</span><span class="n">he</span><span class="o">-&gt;</span><span class="n">h_addr_list</span><span class="p">;</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">addr_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="n">i</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">);</span>
         <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s&quot;</span><span class="p">,</span> <span class="n">inet_ntoa</span><span class="p">(</span><span class="o">*</span><span class="n">addr_list</span><span class="p">[</span><span class="n">i</span><span class="p">]));</span>
@@ -738,15 +809,15 @@ But <code>the order of index and position is inverted</code> when index value is
         <content type="html" xml:base="https://jasonjoo2010.github.io/" xml:lang="en">
             <![CDATA[ <h1 id="toc_0">Issue occurred</h1>
 <p>Recently there is a very strange problem happening every night on about 20:00:05. The <code>SELECTED</code> provider (DUBBO) will reach the capacity of DUBBO thread pool which is limit to <strong>2000</strong> threads and in <strong>fixed</strong> pool model. Most of them blocked in the position of fetching connections through druid:</p>
-<div class="highlight"><pre><span></span><span class="o">-</span>  <span class="n">waiting</span> <span class="n">on</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">concurrent</span><span class="o">.</span><span class="na">locks</span><span class="o">.</span><span class="na">AbstractQueuedSynchronizer$ConditionObject</span><span class="err">@</span><span class="mi">63</span><span class="n">c4ac4b</span>
-        <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">concurrent</span><span class="o">.</span><span class="na">locks</span><span class="o">.</span><span class="na">LockSupport</span><span class="o">.</span><span class="na">parkNanos</span><span class="o">(</span><span class="n">LockSupport</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">215</span><span class="o">)</span>
-        <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">concurrent</span><span class="o">.</span><span class="na">locks</span><span class="o">.</span><span class="na">AbstractQueuedSynchronizer$ConditionObject</span><span class="o">.</span><span class="na">awaitNanos</span><span class="o">(</span><span class="n">AbstractQueuedSynchronizer</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">2078</span><span class="o">)</span>
-        <span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">alibaba</span><span class="o">.</span><span class="na">druid</span><span class="o">.</span><span class="na">pool</span><span class="o">.</span><span class="na">DruidDataSource</span><span class="o">.</span><span class="na">pollLast</span><span class="o">(</span><span class="n">DruidDataSource</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">1479</span><span class="o">)</span>
-        <span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">alibaba</span><span class="o">.</span><span class="na">druid</span><span class="o">.</span><span class="na">pool</span><span class="o">.</span><span class="na">DruidDataSource</span><span class="o">.</span><span class="na">getConnectionInternal</span><span class="o">(</span><span class="n">DruidDataSource</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">1079</span><span class="o">)</span>
-        <span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">alibaba</span><span class="o">.</span><span class="na">druid</span><span class="o">.</span><span class="na">pool</span><span class="o">.</span><span class="na">DruidDataSource</span><span class="o">.</span><span class="na">getConnectionDirect</span><span class="o">(</span><span class="n">DruidDataSource</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">946</span><span class="o">)</span>
-        <span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">alibaba</span><span class="o">.</span><span class="na">druid</span><span class="o">.</span><span class="na">filter</span><span class="o">.</span><span class="na">FilterChainImpl</span><span class="o">.</span><span class="na">dataSource_connect</span><span class="o">(</span><span class="n">FilterChainImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">4544</span><span class="o">)</span>
-        <span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">alibaba</span><span class="o">.</span><span class="na">druid</span><span class="o">.</span><span class="na">filter</span><span class="o">.</span><span class="na">stat</span><span class="o">.</span><span class="na">StatFilter</span><span class="o">.</span><span class="na">dataSource_getConnection</span><span class="o">(</span><span class="n">StatFilter</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">661</span><span class="o">)</span>
-        <span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">alibaba</span><span class="o">.</span><span class="na">druid</span><span class="o">.</span><span class="na">filter</span><span class="o">.</span><span class="na">FilterChainImpl</span><span class="o">.</span><span class="na">dataSource_connect</span><span class="o">(</span><span class="n">FilterChainImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">4540</span><span class="o">)</span>
+<div class="highlight"><pre><span></span><span class="o">-</span>  <span class="n">waiting</span> <span class="n">on</span> <span class="n">java</span><span class="p">.</span><span class="na">util</span><span class="p">.</span><span class="na">concurrent</span><span class="p">.</span><span class="na">locks</span><span class="p">.</span><span class="na">AbstractQueuedSynchronizer$ConditionObject</span><span class="err">@</span><span class="mi">63</span><span class="n">c4ac4b</span>
+        <span class="n">at</span> <span class="n">java</span><span class="p">.</span><span class="na">util</span><span class="p">.</span><span class="na">concurrent</span><span class="p">.</span><span class="na">locks</span><span class="p">.</span><span class="na">LockSupport</span><span class="p">.</span><span class="na">parkNanos</span><span class="p">(</span><span class="n">LockSupport</span><span class="p">.</span><span class="na">java</span><span class="p">:</span><span class="mi">215</span><span class="p">)</span>
+        <span class="n">at</span> <span class="n">java</span><span class="p">.</span><span class="na">util</span><span class="p">.</span><span class="na">concurrent</span><span class="p">.</span><span class="na">locks</span><span class="p">.</span><span class="na">AbstractQueuedSynchronizer$ConditionObject</span><span class="p">.</span><span class="na">awaitNanos</span><span class="p">(</span><span class="n">AbstractQueuedSynchronizer</span><span class="p">.</span><span class="na">java</span><span class="p">:</span><span class="mi">2078</span><span class="p">)</span>
+        <span class="n">at</span> <span class="n">com</span><span class="p">.</span><span class="na">alibaba</span><span class="p">.</span><span class="na">druid</span><span class="p">.</span><span class="na">pool</span><span class="p">.</span><span class="na">DruidDataSource</span><span class="p">.</span><span class="na">pollLast</span><span class="p">(</span><span class="n">DruidDataSource</span><span class="p">.</span><span class="na">java</span><span class="p">:</span><span class="mi">1479</span><span class="p">)</span>
+        <span class="n">at</span> <span class="n">com</span><span class="p">.</span><span class="na">alibaba</span><span class="p">.</span><span class="na">druid</span><span class="p">.</span><span class="na">pool</span><span class="p">.</span><span class="na">DruidDataSource</span><span class="p">.</span><span class="na">getConnectionInternal</span><span class="p">(</span><span class="n">DruidDataSource</span><span class="p">.</span><span class="na">java</span><span class="p">:</span><span class="mi">1079</span><span class="p">)</span>
+        <span class="n">at</span> <span class="n">com</span><span class="p">.</span><span class="na">alibaba</span><span class="p">.</span><span class="na">druid</span><span class="p">.</span><span class="na">pool</span><span class="p">.</span><span class="na">DruidDataSource</span><span class="p">.</span><span class="na">getConnectionDirect</span><span class="p">(</span><span class="n">DruidDataSource</span><span class="p">.</span><span class="na">java</span><span class="p">:</span><span class="mi">946</span><span class="p">)</span>
+        <span class="n">at</span> <span class="n">com</span><span class="p">.</span><span class="na">alibaba</span><span class="p">.</span><span class="na">druid</span><span class="p">.</span><span class="na">filter</span><span class="p">.</span><span class="na">FilterChainImpl</span><span class="p">.</span><span class="na">dataSource_connect</span><span class="p">(</span><span class="n">FilterChainImpl</span><span class="p">.</span><span class="na">java</span><span class="p">:</span><span class="mi">4544</span><span class="p">)</span>
+        <span class="n">at</span> <span class="n">com</span><span class="p">.</span><span class="na">alibaba</span><span class="p">.</span><span class="na">druid</span><span class="p">.</span><span class="na">filter</span><span class="p">.</span><span class="na">stat</span><span class="p">.</span><span class="na">StatFilter</span><span class="p">.</span><span class="na">dataSource_getConnection</span><span class="p">(</span><span class="n">StatFilter</span><span class="p">.</span><span class="na">java</span><span class="p">:</span><span class="mi">661</span><span class="p">)</span>
+        <span class="n">at</span> <span class="n">com</span><span class="p">.</span><span class="na">alibaba</span><span class="p">.</span><span class="na">druid</span><span class="p">.</span><span class="na">filter</span><span class="p">.</span><span class="na">FilterChainImpl</span><span class="p">.</span><span class="na">dataSource_connect</span><span class="p">(</span><span class="n">FilterChainImpl</span><span class="p">.</span><span class="na">java</span><span class="p">:</span><span class="mi">4540</span><span class="p">)</span>
 </pre></div>
 
 <h1 id="toc_1">Analysis 1</h1>
