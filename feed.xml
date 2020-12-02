@@ -3,14 +3,14 @@
     <title>Jason Joo</title>
     <link href="https://jasonjoo2010.github.io/feed.xml" rel="self" />
     <link href="https://jasonjoo2010.github.io/" />
-    <updated>2020-11-30T20:56:38+08:00</updated>
+    <updated>2020-12-02T08:12:48+08:00</updated>
     <id>https://jasonjoo2010.github.io/</id>
     <entry>
         <title type="html"><![CDATA[Abnormal CPU Usage After Upgrading to Big Sur(11.0.1)]]></title>
         <author><name>Jason</name></author>
         <link href="https://jasonjoo2010.github.io/2020/11/30/abnormal_cpu_consumption_big_sur.html"/>
         <published>2020-11-30T00:00:00+08:00</published>
-        <updated>2020-11-30T20:56:38+08:00</updated>
+        <updated>2020-12-02T08:12:48+08:00</updated>
         <id>https://jasonjoo2010.github.io/2020/11/30/abnormal_cpu_consumption_big_sur.html</id>
         <category scheme="https://jasonjoo2010.github.io/tag/big-sur/" term="Big Sur" label="Big Sur" />
         <category scheme="https://jasonjoo2010.github.io/tag/osx/" term="OSX" label="OSX" />
@@ -53,6 +53,11 @@ sleep <span class="m">30</span>
 
 <pre><code>* * * * * ~/check_cloudd</code></pre>
 <p>It will kill <code>cloudd</code> every 30 seconds.</p>
+
+<h1 id="toc_3">Final Shot</h1>
+<p>The temporary solution worked for about ten days. But in a morning it doesn&#39;t work anymore. When <code>cloudd</code> restarted it ran into heavy load immediately. And there still haven&#39;t existed a new release yet.</p>
+<p>So I gave up and logged out my <code>Apple ID</code> finally. Restarted OSX, waited it be stable, relogged in my Apple ID and clean all duplicated copy of data like iCloud Drive, etc. .</p>
+<p>Everything seems back to normal which should be verified by days in future.</p>
 ]]>
         </content>
     </entry><entry>

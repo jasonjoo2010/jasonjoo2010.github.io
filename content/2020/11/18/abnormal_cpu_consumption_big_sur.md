@@ -65,4 +65,12 @@ and take this for reference (use your own path)
 
 It will kill `cloudd` every 30 seconds.
 
+# Final Shot
+
+The temporary solution worked for about ten days. But in a morning it doesn't work anymore. When `cloudd` restarted it ran into heavy load immediately. And there still haven't existed a new release yet.
+
+So I gave up and logged out my `Apple ID` finally. Restarted OSX, waited it be stable, relogged in my Apple ID and clean all duplicated copy of data like iCloud Drive, etc. .
+
+Everything seems back to normal which should be verified by days in future.
+
 
