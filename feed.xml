@@ -3,9 +3,29 @@
     <title>Jason Joo</title>
     <link href="https://jasonjoo2010.github.io/feed.xml" rel="self" />
     <link href="https://jasonjoo2010.github.io/" />
-    <updated>2020-12-02T08:12:48+08:00</updated>
+    <updated>2020-12-09T10:40:49+08:00</updated>
     <id>https://jasonjoo2010.github.io/</id>
     <entry>
+        <title type="html"><![CDATA[Visual Studio Code Becomes Laggy/Freezing in Big Sur]]></title>
+        <author><name>Jason</name></author>
+        <link href="https://jasonjoo2010.github.io/2020/12/09/visual_studio_code_laggy.html"/>
+        <published>2020-12-09T00:00:00+08:00</published>
+        <updated>2020-12-09T10:40:49+08:00</updated>
+        <id>https://jasonjoo2010.github.io/2020/12/09/visual_studio_code_laggy.html</id>
+        <category scheme="https://jasonjoo2010.github.io/tag/big-sur/" term="Big Sur" label="Big Sur" />
+        <content type="html" xml:base="https://jasonjoo2010.github.io/" xml:lang="en">
+            <![CDATA[ <h1 id="toc_0">Issue</h1>
+<p>After upgrading Big Sur some applications became freezing or laggy. Especially in Visual Studio Code the terminal became very laggy typing commands. Even unusable.</p>
+
+<h1 id="toc_1">Solution</h1>
+<p>This solution works to me.</p>
+<div class="highlight"><pre><span></span>codesign --remove-signature /Applications/Visual<span class="se">\ </span>Studio<span class="se">\ </span>Code.app/Contents/Frameworks/Code<span class="se">\ </span>Helper<span class="se">\ \(</span>Renderer<span class="se">\)</span>.app
+</pre></div>
+<p>Then reopen it.</p>
+<p>Maybe it also works to other similar issued applications.</p>
+]]>
+        </content>
+    </entry><entry>
         <title type="html"><![CDATA[Abnormal CPU Usage After Upgrading to Big Sur(11.0.1)]]></title>
         <author><name>Jason</name></author>
         <link href="https://jasonjoo2010.github.io/2020/11/30/abnormal_cpu_consumption_big_sur.html"/>
